@@ -1,0 +1,5006 @@
+<!doctype html>
+<!--
+  ============================================================================
+  SmartSacak — Market / Store (tek dosya / single file)
+  ============================================================================
+  Veritabanı YOK. Her şey bu dosyanın içinde.  |  No database. All in this file.
+
+  1) TELEFON NUMARASI  →  aşağıdaki CONFIG.phone alanına yaz.
+     Sipariş, telefonun MESAJ (SMS) uygulaması ile bu numaraya gönderilir.
+     PHONE NUMBER      →  set CONFIG.phone below; ordering opens the phone's
+     own messages app with the order ready to send to that number.
+
+  2) ÜRÜN EKLEMEK      →  MENU listesinde her ürün TEK bir kayıt (tek div/kart):
+     ADD A PRODUCT     →  one entry per product inside MENU:
+
+        { id: "p1", name: { tr:"Adı", en:"Name", ru:"Имя", tk:"Ady" },
+          price: 12.5, image: "burger-burger1.webp" }
+
+  3) RESİMLER          →  "uploads_products/" klasörüne koy, sadece adını yaz.
+     IMAGES            →  drop it into uploads_products/, reference the name.
+
+  4) BANNER            →  BANNERS listesi. Kendiliğinden kayar, parmakla da
+                          sürüklenebilir. / auto-scrolls, also swipeable.
+
+  Parallax logo, dil değiştirici, koyu/açık tema ve ürün büyük resim penceresi
+  hazırdır. PDF yoktur.
+  ============================================================================
+-->
+<html lang="tr" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f97316" />
+    <title>Turkana Market</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>"
+    />
+
+    <!-- Açılış ekranı / boot screen. Sayfa JS ile çizildiği için, dosyanın geri
+         kalanı inerken ekran boş kalmasın diye burada — en üstte — duruyor.
+         The page is drawn by JS, so this sits first in the file: it paints while
+         the rest of the document is still downloading. Keep it tiny. -->
+    <script>
+      // Tema hemen uygulanır, yoksa açılışta koyu/açık zıplaması olur.
+      // Apply the theme up front, otherwise the boot screen flashes.
+      // Dikkat: IIFE şart — buradaki değişkenler global olursa aşağıdaki
+      // uygulama betiğiyle çakışır. / Must stay an IIFE: globals declared here
+      // would collide with the app script below.
+      (function () {
+        try {
+          var saved = localStorage.getItem("sm.market.theme");
+          document.documentElement.dataset.theme = saved
+            ? JSON.parse(saved)
+            : "light";
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #fafafa;
+        color: #6b7280;
+        font:
+          500 15px/1.4 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      html[data-theme="dark"] #boot {
+        background: #0a1018;
+        color: #8b95a5;
+      }
+      #boot .mark {
+        font-size: 44px;
+        animation: boot-pulse 1.4s ease-in-out infinite;
+      }
+      #boot .bar {
+        width: 132px;
+        height: 3px;
+        border-radius: 99px;
+        background: currentColor;
+        opacity: 0.18;
+        overflow: hidden;
+      }
+      #boot .bar::after {
+        content: "";
+        display: block;
+        width: 40%;
+        height: 100%;
+        border-radius: 99px;
+        background: #54bb1d;
+        animation: boot-slide 1.1s ease-in-out infinite;
+      }
+      @keyframes boot-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(0.88);
+          opacity: 0.55;
+        }
+      }
+      @keyframes boot-slide {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(350%);
+        }
+      }
+      /* Uygulama çizilince kaybolur / removed once the app has rendered. */
+      html.ready #boot {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot .mark,
+        #boot .bar::after {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot" role="status" aria-live="polite">
+      <div class="mark" aria-hidden="true">🛍️</div>
+      <div class="bar" aria-hidden="true"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <div class="brand-text">
+            <div class="brand-name" id="brandName">Turkana Market</div>
+            <div class="brand-sub" data-i18n="tagline"></div>
+          </div>
+        </div>
+
+        <button id="topOrder" type="button"></button>
+
+        <div class="lang">
+          <button
+            class="icon-btn lang-btn"
+            id="langBtn"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span class="flag" id="langFlag">🇹🇷</span>
+            <span class="code" id="langCode">TR</span>
+          </button>
+          <div class="lang-menu" id="langMenu" role="menu"></div>
+        </div>
+
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Theme">
+          <svg
+            id="iconMoon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <svg
+            id="iconSun"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="display: none"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Parallax hero: logo + welcome drift down as you scroll, plates trail behind -->
+    <section class="hero" id="hero">
+      <div class="hero-decor" id="heroDecor">
+        <img class="left" id="heroLeft" src="" alt="" />
+        <img class="right" id="heroRight" src="" alt="" />
+      </div>
+      <div class="hero-content" id="heroContent">
+        <img class="hero-logo" id="heroLogo" src="" alt="" />
+        <span class="hero-welcome" data-i18n="welcome"></span>
+      </div>
+    </section>
+
+    <!-- Auto-scrolling, swipeable banner -->
+    <div class="banner-wrap" id="bannerWrap">
+      <div class="banner">
+        <div class="banner-track" id="bannerTrack"></div>
+        <div class="dots" id="bannerDots"></div>
+      </div>
+    </div>
+
+    <nav class="catrail" aria-label="Categories">
+      <div class="catrail-inner" id="catrail"></div>
+    </nav>
+
+    <main id="content"></main>
+
+    <!-- Sayfa altı. Ziyaretçi sayacı sunucusuz çalışır: sayı ücretsiz bir
+         sayaç servisinden gelir, gelmezse satır kendini gizler.
+         Page footer. The visit counter needs no backend: the number comes from
+         a free counter service, and the row hides itself if that call fails. -->
+    <footer class="sitefoot">
+      <div class="foot-brand" id="footBrand">Turkana Market</div>
+      <div class="visits" id="visits" hidden>
+        <span class="visits-eye" aria-hidden="true">👁</span>
+        <span class="visits-num" id="visitsNum">—</span>
+      </div>
+    </footer>
+
+    <!-- Bölüm geçişi: soldaki yuvarlak diğer sayfaya götürür.
+         Section switch: the circle on the left hops to the other page. -->
+    <a
+      class="switch-fab"
+      id="switchFab"
+      href="index.html"
+      data-i18n-label="goMeal"
+    >
+      <span class="switch-ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 3v6a2.4 2.4 0 0 0 4.8 0V3" />
+          <path d="M8.4 11.4V21" />
+          <path d="M17.4 21V3c1.8 1.5 2.7 3.8 2.7 6.4 0 2.4-.9 3.9-2.7 4.2" />
+        </svg>
+      </span>
+      <span class="switch-cap" data-i18n="goMeal"></span>
+    </a>
+
+    <!-- Soldaki geçiş yuvarlağının sağdaki ikizi: aynı halka, altında aynı etiket.
+         Twin of the switch circle on the left: same ring, same caption below. -->
+    <button class="fab" id="fab" type="button" aria-label="Cart">
+      <span class="fab-ring">
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="20" r="1.6" />
+          <circle cx="18" cy="20" r="1.6" />
+          <path d="M2 3h2.2l2.6 12.2h11.4l2.2-8.4H6" />
+        </svg>
+        <span class="fab-badge" id="fabBadge">0</span>
+      </span>
+      <span class="fab-cap" data-i18n="cartShort"></span>
+    </button>
+
+    <div class="backdrop" id="backdrop"></div>
+
+    <aside
+      class="sheet"
+      id="sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sheetTitle"
+    >
+      <div class="sheet-head">
+        <h2 id="sheetTitle" data-i18n="cart"></h2>
+        <span class="total-mini" id="sheetCount"></span>
+        <button
+          class="icon-btn"
+          id="sheetClose"
+          type="button"
+          aria-label="Close"
+        >
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          >
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="sheet-body" id="sheetBody"></div>
+
+      <div class="sheet-foot">
+        <div class="totals">
+          <span class="t-label" data-i18n="total"></span>
+          <span class="t-value" id="totalValue">0</span>
+        </div>
+        <button class="cta" id="orderBtn" type="button">
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+            />
+          </svg>
+          <span data-i18n="sendOrder"></span>
+        </button>
+        <button
+          class="ghost"
+          id="clearBtn"
+          type="button"
+          data-i18n="clear"
+        ></button>
+      </div>
+    </aside>
+
+    <!-- Big picture popup for a single product -->
+    <div class="pop-back" id="popBack"></div>
+    <div
+      class="pop"
+      id="pop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popTitle"
+    >
+      <div class="pop-card" id="popCard">
+        <button
+          class="pop-close"
+          id="popClose"
+          type="button"
+          aria-label="Close"
+        >
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          >
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div class="pop-img" id="popImgWrap">
+          <span class="ph" aria-hidden="true">🍽️</span>
+          <img id="popImg" src="" alt="" />
+          <div class="veil"></div>
+          <span class="pop-price-pill" id="popPricePill"></span>
+        </div>
+
+        <div class="pop-body">
+          <span class="pop-badge" id="popBadge"></span>
+          <h2 class="pop-title" id="popTitle"></h2>
+          <span class="pop-price-big" id="popPriceBig"></span>
+
+          <div class="pop-actions">
+            <button class="cta" id="popCta" type="button"></button>
+
+            <div class="pop-stepper" id="popStepper">
+              <button type="button" id="popDec" aria-label="-">
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                >
+                  <path d="M5 12h14" />
+                </svg>
+              </button>
+              <span class="q" id="popQty">0</span>
+              <button type="button" id="popInc" aria-label="+">
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+
+    <!-- Ana stil dosyası burada; <head> içindeyken sayfanın boyanmasını
+         geciktiriyordu. Yukarıdaki açılış ekranı zaten her şeyi örtüyor.
+         The main stylesheet lives here, not in <head>: up there it blocked
+         first paint. The boot screen above already covers the page. -->
+    <style>
+      :root {
+        --bg: hsl(0 0% 98%);
+        --bg-soft: hsl(220 14% 95%);
+        --card: hsl(0 0% 100%);
+        --fg: hsl(222 47% 11%);
+        --muted: hsl(220 9% 46%);
+        --border: hsl(220 13% 87%);
+        --accent: #54bb1d;
+        --accent-2: #54bb1d;
+        --accent-hover: #54bb1d;
+        /* --accent: #f97316;
+        --accent-2: #fb923c;
+        --accent-hover: #ea580c; */
+        --accent-soft: rgba(249, 115, 22, 0.1);
+        --shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+        --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.16);
+        --header-h: 62px;
+        --hero-op: 1;
+      }
+
+      html[data-theme="dark"] {
+        --bg: hsl(222 47% 6%);
+        --bg-soft: hsl(222 47% 8%);
+        --card: hsl(222 47% 9%);
+        --fg: hsl(210 40% 98%);
+        --muted: hsl(215 20% 65%);
+        --border: hsl(217 33% 17%);
+        --accent-soft: rgba(249, 115, 22, 0.14);
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.55);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.45;
+        padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+        overflow-x: hidden;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+      body.locked {
+        overflow: hidden;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        border: 0;
+        background: none;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      /* ---------------------------------------------------------------- header */
+      header.topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: var(--bg); /* fallback for browsers without color-mix() */
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border);
+        padding: 10px 14px;
+        padding-top: calc(10px + env(safe-area-inset-top, 0px));
+      }
+
+      .topbar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        margin-inline-end: auto;
+      }
+
+      .brand-text {
+        min-width: 0;
+      }
+      .brand-name {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .brand-sub {
+        font-size: 11.5px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--muted);
+        display: grid;
+        place-items: center;
+        transition:
+          color 0.18s,
+          border-color 0.18s,
+          transform 0.18s;
+      }
+      .icon-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .icon-btn:active {
+        transform: scale(0.94);
+      }
+
+      .top-order {
+        display: none;
+        align-items: center;
+        gap: 7px;
+        height: 40px;
+        padding: 0 14px;
+        border-radius: 12px;
+        background: linear-gradient(
+          to right,
+          var(--accent-hover),
+          var(--accent)
+        );
+        color: #fff;
+        font-size: 13.5px;
+        font-weight: 650;
+        box-shadow: 0 6px 18px var(--accent-soft);
+        transition:
+          transform 0.18s,
+          filter 0.18s;
+      }
+      .top-order.on {
+        display: inline-flex;
+      }
+      .top-order:hover {
+        filter: brightness(1.06);
+      }
+      .top-order:active {
+        transform: scale(0.96);
+      }
+      .top-order span.label {
+        display: none;
+      }
+      @media (min-width: 560px) {
+        .top-order span.label {
+          display: inline;
+        }
+      }
+
+      /* language menu */
+      .lang {
+        position: relative;
+        flex: 0 0 auto;
+      }
+      .lang-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: auto;
+        padding: 0 11px;
+      }
+      .lang-btn .flag {
+        font-size: 16px;
+        line-height: 1;
+      }
+      .lang-btn .code {
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .lang-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        inset-inline-end: 0;
+        min-width: 176px;
+        padding: 6px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-lg);
+        display: grid;
+        gap: 2px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition:
+          opacity 0.16s,
+          transform 0.16s,
+          visibility 0.16s;
+      }
+      .lang-menu.open {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+      }
+
+      .lang-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 9px 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-align: start;
+        transition: background 0.15s;
+      }
+      .lang-item:hover {
+        background: var(--bg-soft);
+      }
+      .lang-item[aria-current="true"] {
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 650;
+      }
+
+      /* ---------------------------------------------------------- hero/parallax */
+      .hero {
+        position: relative;
+        height: 270px;
+        overflow: hidden;
+        background: var(--bg);
+        isolation: isolate;
+      }
+      @media (min-width: 768px) {
+        .hero {
+          height: 400px;
+        }
+      }
+
+      /* The plates drift slower than the logo — that difference is the depth. */
+      .hero-decor {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        user-select: none;
+        opacity: var(--hero-op);
+        will-change: transform;
+      }
+      .hero-decor img {
+        position: absolute;
+        top: 50%;
+        width: 112px;
+        object-fit: contain;
+        transform: translateY(-50%);
+      }
+      .hero-decor img.left {
+        inset-inline-start: 0;
+      }
+      .hero-decor img.right {
+        inset-inline-end: 0;
+      }
+      @media (min-width: 768px) {
+        .hero-decor img {
+          width: 288px;
+        }
+      }
+      html[data-theme="light"] .hero-decor {
+        mix-blend-mode: multiply;
+      }
+      html[data-theme="dark"] .hero-decor {
+        opacity: calc(var(--hero-op) * 0.8);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 24px;
+        opacity: var(--hero-op);
+        will-change: transform;
+      }
+      .hero-logo {
+        width: 160px;
+        height: 160px;
+        object-fit: contain;
+        filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.18));
+        animation: fadeIn 0.6s ease both;
+      }
+      @media (min-width: 768px) {
+        .hero-logo {
+          width: 240px;
+          height: 240px;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+
+      .hero-welcome {
+        margin-top: 12px;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+        color: var(--accent);
+      }
+      @media (min-width: 768px) {
+        .hero-welcome {
+          font-size: 36px;
+        }
+      }
+
+      /* ---------------------------------------------------------------- banner */
+      .banner-wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 12px 16px;
+      }
+      .banner {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        background: var(--bg-soft);
+      }
+      .banner-track {
+        display: flex;
+        cursor: grab;
+        touch-action: pan-y;
+      }
+      .banner-track.dragging {
+        cursor: grabbing;
+      }
+
+      .slide {
+        position: relative;
+        width: 100%;
+        flex: 0 0 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        user-select: none;
+        /* Resim inerken görünen renk: her banner için siyah. Resim gelince
+           üstünde yumuşakça belirir, renk sıçraması olmaz.
+           Shown while the picture downloads — black for every banner. The image
+           then fades in on top of it, so there is no colour jump. */
+        background: #000;
+      }
+      @media (min-width: 768px) {
+        .slide {
+          aspect-ratio: 2 / 1;
+        }
+      }
+      .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        -webkit-user-drag: none;
+        /* Siyahın üstünde yumuşakça açılır / eases open over the black. */
+        opacity: 0;
+        transition: opacity 0.45s ease;
+      }
+      .slide.ok img {
+        opacity: 1;
+      }
+      .slide .veil {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.72),
+          rgba(0, 0, 0, 0.08) 55%,
+          transparent
+        );
+      }
+      .slide .txt {
+        position: absolute;
+        inset-inline: 0;
+        bottom: 0;
+        padding: 14px 16px;
+      }
+      .slide .txt b {
+        display: block;
+        color: #fff;
+        font-size: 15.5px;
+        font-weight: 700;
+        line-height: 1.25;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+      .slide .txt span {
+        display: block;
+        margin-top: 3px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .dots {
+        position: absolute;
+        bottom: 12px;
+        inset-inline-end: 14px;
+        display: flex;
+        gap: 6px;
+      }
+      .dots button {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.5);
+        transition:
+          width 0.22s,
+          background 0.22s;
+      }
+      .dots button[aria-current="true"] {
+        width: 20px;
+        background: #fff;
+      }
+
+      /* --------------------------------------------------------- category rail */
+      .catrail {
+        position: sticky;
+        top: var(--header-h);
+        z-index: 30;
+        background: var(--bg); /* fallback for browsers without color-mix() */
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+      }
+      .catrail-inner {
+        display: flex;
+        gap: 8px;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .catrail-inner::-webkit-scrollbar {
+        display: none;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+        height: 40px;
+        padding: 0 14px 0 6px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        font-size: 13.5px;
+        font-weight: 550;
+        color: var(--fg);
+        white-space: nowrap;
+        transition:
+          border-color 0.18s,
+          background 0.18s,
+          color 0.18s,
+          transform 0.18s;
+      }
+      .chip.plain {
+        padding-inline-start: 14px;
+      }
+      .chip img {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        object-fit: cover;
+      }
+      .chip:hover {
+        border-color: var(--accent);
+      }
+      .chip:active {
+        transform: scale(0.96);
+      }
+      .chip[aria-selected="true"] {
+        background: linear-gradient(
+          to right,
+          var(--accent-hover),
+          var(--accent)
+        );
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 6px 18px var(--accent-soft);
+      }
+      .chip .count {
+        font-size: 11.5px;
+        opacity: 0.7;
+      }
+
+      /* ------------------------------------------------------------------ main */
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 18px 14px 0;
+      }
+
+      .section + .section {
+        margin-top: 26px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 0 2px 12px;
+      }
+      .section-head h2 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .section-head .n {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      @media (min-width: 640px) {
+        .grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+        }
+      }
+      @media (min-width: 960px) {
+        .grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      @media (min-width: 1200px) {
+        .grid {
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+      }
+
+      /* one card = one product div */
+      .card {
+        position: relative;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        text-align: start;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+        border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      }
+      .card.in-cart {
+        border-color: var(--accent);
+      }
+
+      .card-img {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: var(--bg-soft);
+        overflow: hidden;
+      }
+      .card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.35s;
+      }
+      .card:hover .card-img img {
+        transform: scale(1.05);
+      }
+      .card-img .ph {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        display: grid;
+        place-items: center;
+        font-size: 28px;
+        opacity: 0.35;
+      }
+
+      /* ------------------------------------------------ resim yükleme parıltısı
+         Her resmin kendi bekleme animasyonu. Resim gelince (ya da hata verince)
+         kapsayıcıya .ok sınıfı eklenir ve parıltı durur.
+         Per-image loading shimmer. The container gets .ok once the picture has
+         loaded — or failed — and the shimmer stops. */
+      .card-img::before,
+      .pop-img::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background-color: var(--bg-soft);
+        background-image: linear-gradient(
+          100deg,
+          transparent 25%,
+          rgba(0, 0, 0, 0.06) 45%,
+          rgba(0, 0, 0, 0.06) 55%,
+          transparent 75%
+        );
+        background-size: 220% 100%;
+        background-repeat: no-repeat;
+        animation: sk-slide 1.15s linear infinite;
+      }
+      html[data-theme="dark"] .card-img::before,
+      html[data-theme="dark"] .pop-img::before {
+        background-image: linear-gradient(
+          100deg,
+          transparent 25%,
+          rgba(255, 255, 255, 0.07) 45%,
+          rgba(255, 255, 255, 0.07) 55%,
+          transparent 75%
+        );
+      }
+      .card-img.ok::before,
+      .pop-img.ok::before {
+        display: none;
+      }
+      @keyframes sk-slide {
+        from {
+          background-position: 170% 0;
+        }
+        to {
+          background-position: -70% 0;
+        }
+      }
+      /* Resim, parıltının üstünde yumuşakça belirir / picture fades in above it */
+      .card-img img,
+      .pop-img img,
+      .chip img {
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .card-img.ok img,
+      .pop-img.ok img,
+      .chip.ok img {
+        opacity: 1;
+      }
+      .qty-flag,
+      .zoom {
+        z-index: 3;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .card-img::before,
+        .pop-img::before {
+          animation: none;
+        }
+      }
+
+      /* hint that the picture opens */
+      .zoom {
+        position: absolute;
+        top: 8px;
+        inset-inline-end: 8px;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.38);
+        backdrop-filter: blur(6px);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .card:hover .zoom {
+        opacity: 1;
+      }
+
+      .qty-flag {
+        position: absolute;
+        top: 8px;
+        inset-inline-start: 8px;
+        height: 24px;
+        min-width: 24px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: linear-gradient(
+          to right,
+          var(--accent-hover),
+          var(--accent)
+        );
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: none;
+        place-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+      .card.in-cart .qty-flag {
+        display: grid;
+      }
+
+      .card-body {
+        padding: 10px 11px 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .card-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .card-foot {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .price {
+        font-size: 14.5px;
+        font-weight: 750;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      /* Soldaki geçiş yuvarlağı ile aynı dil: çerçeveli yuvarlak, dokununca
+         dolar. / Same language as the switch circle on the left: an outlined
+         ring that fills in on hover and press. */
+      .add {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 999px;
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          transform 0.16s ease;
+      }
+      .add:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .add:active {
+        background: var(--accent);
+        color: #fff;
+        transform: scale(0.9);
+      }
+      .add:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      /* Sepetteyken "+" düğmesinin yerini alır, o yüzden o da yuvarlak.
+         Takes the "+" button's place once in the cart, so it is round too. */
+      .stepper {
+        display: none;
+        align-items: center;
+        gap: 2px;
+        background: var(--card);
+        border: 2px solid var(--accent);
+        border-radius: 999px;
+        padding: 2px;
+      }
+      .card.in-cart .stepper {
+        display: flex;
+      }
+      .card.in-cart .add {
+        display: none;
+      }
+      .stepper button {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        color: var(--accent);
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .stepper button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .stepper .q {
+        min-width: 20px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .empty {
+        padding: 60px 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty .big {
+        font-size: 34px;
+        margin-bottom: 10px;
+      }
+
+      /* ------------------------------------------------------------------- fab */
+      /* Soldaki geçiş yuvarlağı ile aynı: çerçeveli halka + altında etiket.
+         Same as the switch circle on the left: outlined ring + caption below. */
+      .fab {
+        position: fixed;
+        z-index: 45;
+        inset-inline-end: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        width: 62px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 0;
+        color: var(--fg);
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.2s ease;
+      }
+      .fab-ring {
+        position: relative; /* rozet buna göre durur / the badge anchors here */
+        width: 62px;
+        height: 62px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .fab-cap {
+        max-width: 74px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+      .fab:hover {
+        transform: translateY(-2px);
+      }
+      .fab:hover .fab-ring {
+        background: var(--accent);
+        color: #fff;
+      }
+      .fab:active {
+        transform: scale(0.94);
+      }
+      .fab:focus-visible .fab-ring {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+      /* Sepete eklendi zıplaması artık sadece halkada — etiket sabit kalsın.
+         The "added" bounce now runs on the ring alone, so the caption stays put. */
+      .fab.pulse .fab-ring {
+        animation: pop 0.38s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.16);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .fab-badge {
+        position: absolute;
+        top: -6px;
+        inset-inline-end: -6px;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: var(--fg);
+        color: var(--bg);
+        border: 2px solid var(--bg);
+        font-size: 12px;
+        font-weight: 750;
+        display: none;
+        place-items: center;
+      }
+      .fab-badge.on {
+        display: grid;
+      }
+
+      /* --------------------------------------------- bölüm geçişi / section switch */
+      /* Sepet düğmesinin sol ikizi: aynı boy, ama dolu değil çerçeveli — böylece
+         "ekle" değil "git" olduğu bakışta anlaşılır.
+         The cart button's mirror twin on the left: same size, outlined instead of
+         filled, so it reads as "go there", never as "add to cart". */
+      .switch-fab {
+        position: fixed;
+        z-index: 45;
+        inset-inline-start: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        width: 62px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--fg);
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.2s ease;
+      }
+      .switch-ring {
+        width: 62px;
+        height: 62px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .switch-ring svg {
+        width: 26px;
+        height: 26px;
+      }
+      .switch-cap {
+        max-width: 74px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+      .switch-fab:hover {
+        transform: translateY(-2px);
+      }
+      .switch-fab:hover .switch-ring {
+        background: var(--accent);
+        color: #fff;
+      }
+      .switch-fab:active {
+        transform: scale(0.94);
+      }
+      .switch-fab:focus-visible .switch-ring {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+      /* Dar telefonlarda sepet ile çakışmasın diye biraz küçülür.
+         Shrinks on narrow phones so it never crowds the cart button. */
+      @media (max-width: 360px) {
+        .switch-fab,
+        .switch-ring,
+        .fab,
+        .fab-ring {
+          width: 54px;
+        }
+        .switch-ring,
+        .fab-ring {
+          height: 54px;
+        }
+        .switch-ring svg,
+        .fab-ring svg {
+          width: 23px;
+          height: 23px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .switch-fab,
+        .switch-ring,
+        .fab,
+        .fab-ring {
+          transition: none;
+        }
+      }
+
+      /* ----------------------------------------------------------- cart sheet */
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(8, 12, 22, 0.55);
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.25s,
+          visibility 0.25s;
+      }
+      .backdrop.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .sheet {
+        position: fixed;
+        z-index: 55;
+        inset-inline-end: 0;
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        max-height: 88vh;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        border-radius: 22px 22px 0 0;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+        transform: translateY(101%);
+        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .sheet.open {
+        transform: none;
+      }
+      @media (min-width: 720px) {
+        .sheet {
+          top: 0;
+          bottom: 0;
+          max-height: none;
+          width: 420px;
+          border-radius: 22px 0 0 22px;
+          border: 1px solid var(--border);
+          transform: translateX(101%);
+        }
+      }
+
+      .sheet-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sheet-head h2 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        margin-inline-end: auto;
+      }
+      .sheet-head .total-mini {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .sheet-body {
+        padding: 12px 16px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .line {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 9px 0;
+      }
+      .line + .line {
+        border-top: 1px solid var(--border);
+      }
+      .line-img {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg-soft);
+      }
+      .line-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .line-main {
+        min-width: 0;
+        flex: 1;
+      }
+      .line-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .line-price {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .line-sum {
+        font-size: 13.5px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .fields {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .fields input,
+      .fields textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--bg-soft);
+        border-radius: 12px;
+        padding: 10px 12px;
+        outline: none;
+        resize: vertical;
+        transition:
+          border-color 0.18s,
+          background 0.18s;
+      }
+      .fields input:focus,
+      .fields textarea:focus {
+        border-color: var(--accent);
+        background: var(--card);
+      }
+      .fields textarea {
+        min-height: 62px;
+      }
+
+      .sheet-foot {
+        padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--border);
+        display: grid;
+        gap: 10px;
+        background: var(--card);
+      }
+      .totals {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      .totals .t-label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .totals .t-value {
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        width: 100%;
+        height: 52px;
+        border-radius: 14px;
+        background: linear-gradient(
+          to right,
+          var(--accent-hover),
+          var(--accent)
+        );
+        color: #fff;
+        font-size: 15.5px;
+        font-weight: 700;
+        box-shadow: 0 10px 26px var(--accent-soft);
+        transition:
+          transform 0.18s,
+          filter 0.18s;
+      }
+      .cta:hover {
+        filter: brightness(1.06);
+      }
+      .cta:active {
+        transform: scale(0.985);
+      }
+      .cta:disabled {
+        opacity: 0.45;
+        box-shadow: none;
+        cursor: not-allowed;
+        filter: none;
+        transform: none;
+      }
+
+      .ghost {
+        height: 40px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 13.5px;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .ghost:hover {
+        background: var(--bg-soft);
+        color: #ef4444;
+      }
+
+      /* --------------------------------------------------- product image popup */
+      .pop-back {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.22s,
+          visibility 0.22s;
+      }
+      .pop-back.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .pop {
+        position: fixed;
+        inset: 0;
+        z-index: 61;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.22s,
+          visibility 0.22s;
+      }
+      .pop.open {
+        opacity: 1;
+        visibility: visible;
+      }
+      @media (min-width: 768px) {
+        .pop {
+          align-items: center;
+          padding: 32px;
+        }
+      }
+
+      .pop-card {
+        position: relative;
+        width: 100%;
+        max-width: 520px;
+        max-height: 88dvh;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 28px 28px 0 0;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(40px) scale(0.96);
+        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .pop.open .pop-card {
+        transform: none;
+      }
+      @media (min-width: 768px) {
+        .pop-card {
+          max-width: 900px;
+          border-radius: 26px;
+          flex-direction: row;
+          max-height: 620px;
+        }
+      }
+
+      .pop-close {
+        position: absolute;
+        top: 12px;
+        inset-inline-end: 12px;
+        z-index: 3;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        transition:
+          background 0.16s,
+          transform 0.16s;
+      }
+      .pop-close:hover {
+        background: rgba(0, 0, 0, 0.62);
+      }
+      .pop-close:active {
+        transform: scale(0.92);
+      }
+
+      .pop-img {
+        position: relative;
+        flex: 0 0 auto;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        background: var(--bg-soft);
+        overflow: hidden;
+      }
+      .pop-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        animation: zoomIn 0.5s ease both;
+      }
+      @keyframes zoomIn {
+        from {
+          transform: scale(1.06);
+        }
+      }
+      .pop-img .ph {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 54px;
+        opacity: 0.3;
+      }
+      .pop-img .veil {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.45),
+          transparent 55%
+        );
+      }
+      @media (min-width: 768px) {
+        .pop-img {
+          width: 55%;
+          flex: 0 0 55%;
+          aspect-ratio: auto;
+          height: auto;
+        }
+        .pop-img .veil {
+          background: linear-gradient(
+            to right,
+            rgba(0, 0, 0, 0.35),
+            transparent 60%
+          );
+        }
+      }
+
+      .pop-price-pill {
+        position: absolute;
+        bottom: 14px;
+        inset-inline-start: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 15px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--card) 94%, transparent);
+        box-shadow: var(--shadow);
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      @media (min-width: 768px) {
+        .pop-price-pill {
+          display: none;
+        }
+      }
+
+      .pop-body {
+        display: flex;
+        flex-direction: column;
+        padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+        gap: 12px;
+        min-height: 0;
+        flex: 1;
+        overflow-y: auto;
+      }
+      @media (min-width: 768px) {
+        .pop-body {
+          padding: 30px 32px;
+          justify-content: center;
+        }
+      }
+
+      .pop-badge {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .pop-title {
+        font-size: 21px;
+        font-weight: 750;
+        line-height: 1.2;
+      }
+      @media (min-width: 768px) {
+        .pop-title {
+          font-size: 28px;
+        }
+      }
+
+      .pop-price-big {
+        display: none;
+        align-self: flex-start;
+        padding: 10px 20px;
+        border-radius: 16px;
+        background: var(--accent-soft);
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      @media (min-width: 768px) {
+        .pop-price-big {
+          display: block;
+        }
+      }
+
+      .pop-actions {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      @media (min-width: 768px) {
+        .pop-actions {
+          margin-top: 18px;
+        }
+      }
+
+      .pop-stepper {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        flex: 0 0 auto;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 4px;
+      }
+      .pop-stepper.on {
+        display: flex;
+      }
+      .pop-stepper button {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        color: var(--fg);
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .pop-stepper button:hover {
+        background: var(--card);
+        color: var(--accent);
+      }
+      .pop-stepper button:active {
+        transform: scale(0.92);
+      }
+      .pop-stepper .q {
+        min-width: 30px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      /* ----------------------------------------------------------------- toast */
+      .toasts {
+        position: fixed;
+        z-index: 70;
+        inset-inline: 0;
+        bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        pointer-events: none;
+        padding: 0 16px;
+      }
+      .toast {
+        max-width: 340px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: var(--fg);
+        color: var(--bg);
+        font-size: 13.5px;
+        font-weight: 600;
+        box-shadow: var(--shadow-lg);
+        animation:
+          toastIn 0.22s ease,
+          toastOut 0.25s ease 1.85s forwards;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.96);
+        }
+      }
+      @keyframes toastOut {
+        to {
+          opacity: 0;
+          transform: translateY(6px) scale(0.97);
+        }
+      }
+
+      /* -------------------------------------------------- sayfa altı / footer */
+      /* Alt boşluk sepet düğmesini (62px + 18px) temizler.
+         The bottom padding clears the floating cart button. */
+      .sitefoot {
+        max-width: 1180px;
+        margin: 40px auto 0;
+        padding: 22px 14px calc(104px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--border);
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        text-align: center;
+      }
+      .foot-brand {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .visits {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 13px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        font-size: 12.5px;
+        color: var(--muted);
+        animation: visitsIn 0.4s ease;
+      }
+      .visits[hidden] {
+        display: none;
+      }
+      .visits-eye {
+        font-size: 13px;
+        opacity: 0.75;
+      }
+      .visits-num {
+        font-weight: 700;
+        color: var(--fg);
+        font-variant-numeric: tabular-nums;
+      }
+      @keyframes visitsIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+
+    <script>
+      /* ==========================================================================
+   1. CONFIG — düzenlemesi gereken tek yer / the only place you need to edit
+   ========================================================================== */
+      const CONFIG = {
+        // Siparişin SMS ile gideceği numara. Ülke kodu ile, başında + olabilir.
+        // The order is sent here as a text message. Include the country code.
+        phone: "+99362998301",
+
+        brand: "Turkana-Market", // üst barda görünen isim / name in the header
+        currency: "m", // para birimi / currency symbol
+        currencyAfter: true, // simge fiyatın sonunda mı? / symbol after the price
+        defaultLanguage: "ru", // tr | en | ru | tk
+        defaultTheme: "light", // dark | light
+
+        // Parallax alanı / parallax hero artwork
+        logo: "uploads_products/logo.webp",
+        heroLeft: "uploads_products/hero-left.png",
+        heroRight: "uploads_products/hero-right.png",
+
+        bannerAutoplayMs: 3500, // banner kaç ms'de bir kayar / autoplay delay
+
+        // Ziyaretçi sayacı / visit counter.
+        // Sunucu yok: sayı ücretsiz bir sayaç servisinde tutulur. "name" bu
+        // siteye özel olmalı — aynı adı başkası kullanırsa sayılar karışır.
+        // Aynı tarayıcı 24 saatte bir kez sayılır, yani "kaç kişi açtı".
+        // No server: the number lives on a free counter service. "name" must be
+        // unique to this site — a shared name would mix your count with theirs.
+        // One browser counts once per 24h, so it reads as "how many people".
+        counter: {
+          enabled: true,
+          name: "turkana-restoran-github-io-market", // benzersiz olsun / keep unique
+          key: "visits",
+          everyHours: 24, // 0 → her açılışı say / count every page load
+        },
+      };
+
+      /* ==========================================================================
+   2. BANNERS — kendiliğinden kayar, parmakla sürüklenebilir
+                auto-scrolls, drag / swipe also works
+   ========================================================================== */
+      const BANNERS = [
+        {
+          image: "pizza.webp",
+          title: {
+            tr: "Tagamly pizzalar bizde",
+            en: "Tagamly pizzalar bizde",
+            ru: "Tagamly pizzalar bizde",
+            tk: "Tagamly pizzalar bizde",
+          },
+          text: {
+            tr: "Turkana restoran sizin hyzmatynyzda!",
+            en: "Turkana restoran sizin hyzmatynyzda!",
+            ru: "Turkana restoran sizin hyzmatynyzda!",
+            tk: "Turkana restoran sizin hyzmatynyzda!",
+          },
+        },
+        {
+          image: "samekan.webp",
+          title: {
+            tr: "Bizin salgymyz",
+            en: "Bizin salgymyz",
+            ru: "Bizin salgymyz",
+            tk: "Bizin salgymyz",
+          },
+          text: {
+            tr: "Samekan otel 1 nji gat",
+            en: "Samekan otel 1 nji gat",
+            ru: "Samekan otel 1 nji gat",
+            tk: "Samekan otel 1 nji gat",
+          },
+        },
+        {
+          image: "turkana.webp",
+          title: {
+            tr: "+99362998301",
+            en: "+99362998301",
+            ru: "+99362998301",
+            tk: "+99362998301",
+          },
+          text: {
+            tr: "Biz bilen galyn!",
+            en: "Biz bilen galyn!",
+            ru: "Biz bilen galyn!",
+            tk: "Biz bilen galyn!",
+          },
+        },
+      ];
+
+      /* ==========================================================================
+   3. LANGUAGES + UI TEXT
+   ========================================================================== */
+      const LANGS = [
+        { code: "tr", label: "Türkçe", flag: "🇹🇷" },
+        { code: "en", label: "English", flag: "🇬🇧" },
+        { code: "ru", label: "Русский", flag: "🇷🇺" },
+        { code: "tk", label: "Türkmençe", flag: "🇹🇲" },
+      ];
+
+      const T = {
+        tr: {
+          tagline: "Online sipariş",
+          welcome: "Hoş geldiniz",
+          cart: "Sepetim",
+          empty: "Sepetiniz boş",
+          emptyHint: "Beğendiğiniz ürüne dokunun, buraya eklenir.",
+          total: "Toplam",
+          order: "Sipariş",
+          sendOrder: "Mesaj ile sipariş ver",
+          clear: "Sepeti boşalt",
+          added: "sepete eklendi",
+          item: "ürün",
+          addToCart: "Sepete ekle",
+          viewCart: "Sepete git",
+          name: "Adınız *",
+          address: "Adresiniz *",
+          cartEmptyWarn: "Sepetiniz boş",
+          noPhone: "Telefon numarası ayarlanmamış (CONFIG.phone)",
+          missingInfo: "Lütfen adınızı ve adresinizi girin",
+          opening: "Mesaj uygulaması açılıyor…",
+          msgHello: "Merhaba! Sipariş vermek istiyorum:",
+          msgTotal: "Toplam",
+          msgName: "Ad",
+          msgAddress: "Adres",
+          visitors: "ziyaretçi",
+          cartShort: "Sepet",
+          goShop: "Market",
+          goMeal: "Yemek",
+        },
+        en: {
+          tagline: "Order online",
+          welcome: "Welcome",
+          cart: "My cart",
+          empty: "Your cart is empty",
+          emptyHint: "Tap a product and it lands here.",
+          total: "Total",
+          order: "Order",
+          sendOrder: "Order by text message",
+          clear: "Clear cart",
+          added: "added to cart",
+          item: "items",
+          addToCart: "Add to cart",
+          viewCart: "Go to cart",
+          name: "Your name *",
+          address: "Your address *",
+          cartEmptyWarn: "Your cart is empty",
+          noPhone: "Phone number is not set (CONFIG.phone)",
+          missingInfo: "Please enter your name and address",
+          opening: "Opening your messages app…",
+          msgHello: "Hello! I would like to order:",
+          msgTotal: "Total",
+          msgName: "Name",
+          msgAddress: "Address",
+          visitors: "visitors",
+          cartShort: "Cart",
+          goShop: "Shop",
+          goMeal: "Meal",
+        },
+        ru: {
+          tagline: "Заказ онлайн",
+          welcome: "Добро пожаловать",
+          cart: "Корзина",
+          empty: "Корзина пуста",
+          emptyHint: "Нажмите на товар — он появится здесь.",
+          total: "Итого",
+          order: "Заказ",
+          sendOrder: "Заказать по СМС",
+          clear: "Очистить корзину",
+          added: "добавлено в корзину",
+          item: "товаров",
+          addToCart: "В корзину",
+          viewCart: "Открыть корзину",
+          name: "Ваше имя *",
+          address: "Ваш адрес *",
+          cartEmptyWarn: "Корзина пуста",
+          noPhone: "Номер телефона не указан (CONFIG.phone)",
+          missingInfo: "Укажите, пожалуйста, имя и адрес",
+          opening: "Открываем приложение сообщений…",
+          msgHello: "Здравствуйте! Хочу сделать заказ:",
+          msgTotal: "Итого",
+          msgName: "Имя",
+          msgAddress: "Адрес",
+          visitors: "посетителей",
+          cartShort: "Корзина",
+          goShop: "Магазин",
+          goMeal: "Еда",
+        },
+        tk: {
+          tagline: "Onlaýn sargyt",
+          welcome: "Hoş geldiňiz",
+          cart: "Sebedim",
+          empty: "Sebediňiz boş",
+          emptyHint: "Haryda basyň, şu ýere goşulýar.",
+          total: "Jemi",
+          order: "Sargyt",
+          sendOrder: "SMS bilen sargyt et",
+          clear: "Sebedi boşat",
+          added: "sebede goşuldy",
+          item: "haryt",
+          addToCart: "Sebede goş",
+          viewCart: "Sebede git",
+          name: "Adyňyz *",
+          address: "Salgyňyz *",
+          cartEmptyWarn: "Sebediňiz boş",
+          noPhone: "Telefon belgisi bellenmedi (CONFIG.phone)",
+          missingInfo: "Adyňyzy we salgyňyzy giriziň",
+          opening: "Habar programmasy açylýar…",
+          msgHello: "Salam! Sargyt etmek isleýärin:",
+          msgTotal: "Jemi",
+          msgName: "Ady",
+          msgAddress: "Salgy",
+          visitors: "myhman",
+          cartShort: "Sebet",
+          goShop: "Dükan",
+          goMeal: "Nahar",
+        },
+      };
+
+      /* ==========================================================================
+   4. MENU — kategoriler ve ürünler / categories and products
+      Resimler "uploads_products/" klasöründen gelir.
+      Images are served from uploads_products/.
+   ========================================================================== */
+      const MENU = [
+        {
+          id: "molped",
+          name: {
+            en: "Molped",
+            tr: "Molped",
+            tk: "Molped",
+            ru: "Molped",
+          },
+          items: [
+            {
+              id: "s11103",
+              name: {
+                en: "Lux Comford",
+                tr: "Lux Comford",
+                tk: "Lux Comford",
+                ru: "Lux Comford",
+              },
+              price: 30,
+              image: "1785892795154-657506945-sm.webp",
+            },
+            {
+              id: "s11104",
+              name: {
+                en: "Sen Comfort",
+                tr: "Sen Comfort",
+                tk: "Sen Comfort",
+                ru: "Sen Comfort",
+              },
+              price: 30,
+              image: "1785892904555-481240586-sm.webp",
+            },
+            {
+              id: "s11105",
+              name: {
+                en: "Sen Comfort Pamuk",
+                tr: "Sen Comfort Pamuk",
+                tk: "Sen Comfort Pamuk",
+                ru: "Sen Comfort Pamuk",
+              },
+              price: 35,
+              image: "1785892939699-782624970-sm.webp",
+            },
+            {
+              id: "s11106",
+              name: {
+                en: "Ladyfit",
+                tr: "Ladyfit",
+                tk: "Ladyfit",
+                ru: "Ladyfit",
+              },
+              price: 30,
+              image: "1785892995929-937205783-sm.webp",
+            },
+            {
+              id: "s11107",
+              name: {
+                en: "Sleepy Natural",
+                tr: "Sleepy Natural",
+                tk: "Sleepy Natural",
+                ru: "Sleepy Natural",
+              },
+              price: 60,
+              image: "1785893056632-591486089-sm.webp",
+            },
+            {
+              id: "s11108",
+              name: {
+                en: "Kotex",
+                tr: "Kotex",
+                tk: "Kotex",
+                ru: "Kotex",
+              },
+              price: 30,
+              image: "1785893102789-779356226-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "zlet",
+          name: {
+            en: "Zlet",
+            tr: "Zlet",
+            tk: "Zlet",
+            ru: "Zlet",
+          },
+          items: [
+            {
+              id: "s11109",
+              name: {
+                en: "Zlet",
+                tr: "Zlet",
+                tk: "Zlet",
+                ru: "Zlet",
+              },
+              price: 20,
+              image: "1785893145746-66793099-sm.webp",
+            },
+            {
+              id: "s11110",
+              name: {
+                en: "Zlet",
+                tr: "Zlet",
+                tk: "Zlet",
+                ru: "Zlet",
+              },
+              price: 20,
+              image: "1785893154251-192396384-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "himiya",
+          name: {
+            en: "Himiya",
+            tr: "Himiya",
+            tk: "Himiya",
+            ru: "Himiya",
+          },
+          items: [
+            {
+              id: "s11037",
+              name: {
+                en: "Ave Sampun",
+                tr: "Ave Sampun",
+                tk: "Ave Sampun",
+                ru: "Ave Sampun",
+              },
+              price: 50,
+              image: "1785820890627-704230355-sm.webp",
+            },
+            {
+              id: "s11031",
+              name: {
+                en: "Clear Shampun",
+                tr: "Clear Shampun",
+                tk: "Clear Shampun",
+                ru: "Clear Shampun",
+              },
+              price: 80,
+              image: "1785820857386-713183300-sm.webp",
+            },
+            {
+              id: "s11033",
+              name: {
+                en: "Dove Sabyn",
+                tr: "Dove Sabyn",
+                tk: "Dove Sabyn",
+                ru: "Dove Sabyn",
+              },
+              price: 30,
+              image: "1785820870264-509050992-sm.webp",
+            },
+            {
+              id: "s11032",
+              name: {
+                en: "Gun Krem",
+                tr: "Gun Krem",
+                tk: "Gun Krem",
+                ru: "Gun Krem",
+              },
+              price: 35,
+              image: "1785820865341-494701736-sm.webp",
+            },
+            {
+              id: "s11034",
+              name: {
+                en: "Herbi Pasta",
+                tr: "Herbi Pasta",
+                tk: "Herbi Pasta",
+                ru: "Herbi Pasta",
+              },
+              price: 90,
+              image: "1785820875930-969097143-sm.webp",
+            },
+            {
+              id: "s11035",
+              name: {
+                en: "Paradontax",
+                tr: "Paradontax",
+                tk: "Paradontax",
+                ru: "Paradontax",
+              },
+              price: 50,
+              image: "1785820881613-937364052-sm.webp",
+            },
+            {
+              id: "s11036",
+              name: {
+                en: "Zity mylo",
+                tr: "Zity mylo",
+                tk: "Zity mylo",
+                ru: "Zity mylo",
+              },
+              price: 30,
+              image: "1785820885922-216905326-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "kupalnik",
+          name: {
+            en: "Kupalnik",
+            tr: "Kupalnik",
+            tk: "Kupalnik",
+            ru: "Kupalnik",
+          },
+          items: [
+            {
+              id: "s11004",
+              name: {
+                en: "Kupalnik",
+                tr: "Kupalnik",
+                tk: "Kupalnik",
+                ru: "Kupalnik",
+              },
+              price: 250,
+              image: "1785819150881-684374006-sm.webp",
+            },
+            {
+              id: "s11006",
+              name: {
+                en: "Kupalnik No1",
+                tr: "Kupalnik No1",
+                tk: "Kupalnik No1",
+                ru: "Kupalnik No1",
+              },
+              price: 250,
+              image: "1785819159651-168379129-sm.webp",
+            },
+            {
+              id: "s11023",
+              name: {
+                en: "Kupalnik No11",
+                tr: "Kupalnik No11",
+                tk: "Kupalnik No11",
+                ru: "Kupalnik No11",
+              },
+              price: 250,
+              image: "1785819257114-775707150-sm.webp",
+            },
+            {
+              id: "s11024",
+              name: {
+                en: "Kupalnik No12",
+                tr: "Kupalnik No12",
+                tk: "Kupalnik No12",
+                ru: "Kupalnik No12",
+              },
+              price: 250,
+              image: "1785819261553-605524290-sm.webp",
+            },
+            {
+              id: "s11007",
+              name: {
+                en: "Kupalnik No2",
+                tr: "Kupalnik No2",
+                tk: "Kupalnik No2",
+                ru: "Kupalnik No2",
+              },
+              price: 250,
+              image: "1785819164602-927985923-sm.webp",
+            },
+            {
+              id: "s11008",
+              name: {
+                en: "Kupalnik No3",
+                tr: "Kupalnik No3",
+                tk: "Kupalnik No3",
+                ru: "Kupalnik No3",
+              },
+              price: 250,
+              image: "1785819170030-506498009-sm.webp",
+            },
+            {
+              id: "s11009",
+              name: {
+                en: "Kupalnik No4",
+                tr: "Kupalnik No4",
+                tk: "Kupalnik No4",
+                ru: "Kupalnik No4",
+              },
+              price: 250,
+              image: "1785819173980-189116044-sm.webp",
+            },
+            {
+              id: "s11010",
+              name: {
+                en: "Kupalnik No5",
+                tr: "Kupalnik No5",
+                tk: "Kupalnik No5",
+                ru: "Kupalnik No5",
+              },
+              price: 250,
+              image: "1785819178210-196360051-sm.webp",
+            },
+            {
+              id: "s11019",
+              name: {
+                en: "Kupalnik No6",
+                tr: "Kupalnik No6",
+                tk: "Kupalnik No6",
+                ru: "Kupalnik No6",
+              },
+              price: 250,
+              image: "1785819236008-119461798-sm.webp",
+            },
+            {
+              id: "s11020",
+              name: {
+                en: "Kupalnik No7",
+                tr: "Kupalnik No7",
+                tk: "Kupalnik No7",
+                ru: "Kupalnik No7",
+              },
+              price: 250,
+              image: "1785819240693-230234343-sm.webp",
+            },
+            {
+              id: "s11021",
+              name: {
+                en: "Kupalnik No8",
+                tr: "Kupalnik No8",
+                tk: "Kupalnik No8",
+                ru: "Kupalnik No8",
+              },
+              price: 250,
+              image: "1785819246264-692377978-sm.webp",
+            },
+            {
+              id: "s11022",
+              name: {
+                en: "Kupalnik No9",
+                tr: "Kupalnik No10",
+                tk: "Kupalnik No10",
+                ru: "Kupalnik No10",
+              },
+              price: 250,
+              image: "1785819250960-201725572-sm.webp",
+            },
+            {
+              id: "s11005",
+              name: {
+                en: "Kupalnik ak",
+                tr: "Kupalnik ak",
+                tk: "Kupalnik ak",
+                ru: "Kupalnik ak",
+              },
+              price: 250,
+              image: "1785819155382-380346775-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "azyk",
+          name: {
+            en: "Azyk",
+            tr: "Azyk",
+            tk: "Azyk",
+            ru: "Azyk",
+          },
+          items: [
+            {
+              id: "s11064",
+              name: {
+                en: "Anakom",
+                tr: "Anakom",
+                tk: "Anakom",
+                ru: "Anakom",
+              },
+              price: 10,
+              image: "1785821031189-94045372-sm.webp",
+            },
+            {
+              id: "s11086",
+              name: {
+                en: "Arahis",
+                tr: "Arahis",
+                tk: "Arahis",
+                ru: "Arahis",
+              },
+              price: 35,
+              image: "1785821157427-195621457-sm.webp",
+            },
+            {
+              id: "s11078",
+              name: {
+                en: "Kix Max",
+                tr: "Kix Max",
+                tk: "Kix Max",
+                ru: "Kix Max",
+              },
+              price: 5,
+              image: "1785821105337-201288801-sm.webp",
+            },
+            {
+              id: "s11059",
+              name: {
+                en: "MacCoffee",
+                tr: "MacCoffee",
+                tk: "MacCoffee",
+                ru: "MacCoffee",
+              },
+              price: 5,
+              image: "1785821005221-819529557-sm.webp",
+            },
+            {
+              id: "s10976",
+              name: {
+                en: "Yeserje",
+                tr: "Yeserje",
+                tk: "Yeserje",
+                ru: "Yeserje",
+              },
+              price: 20,
+              image: "1785818167574-125259020-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "keksler-we-kokeler",
+          name: {
+            en: "Keksler we kokeler",
+            tr: "Keksler we kokeler",
+            tk: "Keksler we kokeler",
+            ru: "Keksler we kokeler",
+          },
+          items: [
+            {
+              id: "s10977",
+              name: {
+                en: "A",
+                tr: "A",
+                tk: "Panda Keks",
+                ru: "A",
+              },
+              price: 10,
+              image: "1785818191324-937606452-sm.webp",
+            },
+            {
+              id: "s10986",
+              name: {
+                en: "Break Delight",
+                tr: "A",
+                tk: "Break Delight",
+                ru: "A",
+              },
+              price: 15,
+              image: "1785818345511-591676625-sm.webp",
+            },
+            {
+              id: "s11081",
+              name: {
+                en: "Choco Pie Original",
+                tr: "Choco Pie Original",
+                tk: "Choco Pie Original",
+                ru: "Choco Pie Original",
+              },
+              price: 50,
+              image: "1785821128130-788823247-sm.webp",
+            },
+            {
+              id: "s11050",
+              name: {
+                en: "Choco-Pie uly",
+                tr: "Choco-Pie uly",
+                tk: "Choco-Pie uly",
+                ru: "Choco-Pie uly",
+              },
+              price: 50,
+              image: "1785820960097-977850561-sm.webp",
+            },
+            {
+              id: "s10967",
+              name: {
+                en: "Cizi koke",
+                tr: "Cizi koke",
+                tk: "Cizi koke",
+                ru: "Cizi koke",
+              },
+              price: 15,
+              image: "1785818120294-890522225-sm.webp",
+            },
+            {
+              id: "s10966",
+              name: {
+                en: "Cizi vic koke",
+                tr: "Cizi vic koke",
+                tk: "Cizi vic koke",
+                ru: "Cizi vic koke",
+              },
+              price: 15,
+              image: "1785818113044-572470623-sm.webp",
+            },
+            {
+              id: "s11056",
+              name: {
+                en: "Cudo Wafli",
+                tr: "Cudo Wafli",
+                tk: "Cudo Wafli",
+                ru: "Cudo Wafli",
+              },
+              price: 60,
+              image: "1785820990153-765513959-sm.webp",
+            },
+            {
+              id: "s11051",
+              name: {
+                en: "Goute Koke",
+                tr: "Goute Koke",
+                tk: "Goute Koke",
+                ru: "Goute Koke",
+              },
+              price: 40,
+              image: "1785820964792-408451721-sm.webp",
+            },
+            {
+              id: "s11055",
+              name: {
+                en: "Halley",
+                tr: "Halley",
+                tk: "Halley",
+                ru: "Halley",
+              },
+              price: 75,
+              image: "1785820985381-602803748-sm.webp",
+            },
+            {
+              id: "s11052",
+              name: {
+                en: "Karowka Wafli",
+                tr: "Karowka Wafli",
+                tk: "Karowka Wafli",
+                ru: "Karowka Wafli",
+              },
+              price: 100,
+              image: "1785820969183-961725656-sm.webp",
+            },
+            {
+              id: "s11077",
+              name: {
+                en: "Kinder Delice",
+                tr: "Kinder Delice",
+                tk: "Kinder Delice",
+                ru: "Kinder Delice",
+              },
+              price: 25,
+              image: "1785821097737-467422627-sm.webp",
+            },
+            {
+              id: "s10989",
+              name: {
+                en: "Nutella Bisquit",
+                tr: "A",
+                tk: "Nutella Bisquit",
+                ru: "A",
+              },
+              price: 20,
+              image: "1785818360417-739346583-sm.webp",
+            },
+            {
+              id: "s11053",
+              name: {
+                en: "Oreo",
+                tr: "Oreo",
+                tk: "Oreo",
+                ru: "Oreo",
+              },
+              price: 60,
+              image: "1785820973365-193426753-sm.webp",
+            },
+            {
+              id: "s11067",
+              name: {
+                en: "Sirang keks",
+                tr: "Sirang keks",
+                tk: "Sirang keks",
+                ru: "Sirang keks",
+              },
+              price: 5,
+              image: "1785821046160-746458016-sm.webp",
+            },
+            {
+              id: "s11054",
+              name: {
+                en: "Sokoladnyye Wafli",
+                tr: "Sokoladnyye Wafli",
+                tk: "Sokoladnyye Wafli",
+                ru: "Sokoladnyye Wafli",
+              },
+              price: 80,
+              image: "1785820980505-362356438-sm.webp",
+            },
+            {
+              id: "s11087",
+              name: {
+                en: "Tam Cikolata",
+                tr: "Tam Cikolata",
+                tk: "Tam Cikolata",
+                ru: "Tam Cikolata",
+              },
+              price: 15,
+              image: "1785821162114-783138917-sm.webp",
+            },
+            {
+              id: "s11088",
+              name: {
+                en: "Tam Cikolata",
+                tr: "Tam Cikolata",
+                tk: "Tam Cikolata",
+                ru: "Tam Cikolata",
+              },
+              price: 50,
+              image: "1785821168201-105869116-sm.webp",
+            },
+            {
+              id: "s11046",
+              name: {
+                en: "Today Bubble Gum",
+                tr: "Today Bubble Gum",
+                tk: "Today Bubble Gum",
+                ru: "Today Bubble Gum",
+              },
+              price: 10,
+              image: "1785820940124-670863506-sm.webp",
+            },
+            {
+              id: "s10969",
+              name: {
+                en: "Today Donut",
+                tr: "Today Donut",
+                tk: "Today Donut",
+                ru: "Today Donut",
+              },
+              price: 10,
+              image: "1785818131078-187221276-sm.webp",
+            },
+            {
+              id: "s10968",
+              name: {
+                en: "Today Goldies Keks",
+                tr: "Today Goldies Keks",
+                tk: "Today Goldies Keks",
+                ru: "Today Goldies Keks",
+              },
+              price: 10,
+              image: "1785818125345-26109607-sm.webp",
+            },
+            {
+              id: "s11070",
+              name: {
+                en: "Today Krossan",
+                tr: "Today Krossan",
+                tk: "Today Krossan",
+                ru: "Today Krossan",
+              },
+              price: 10,
+              image: "1785821060718-109741639-sm.webp",
+            },
+            {
+              id: "s10984",
+              name: {
+                en: "Today Snowball",
+                tr: "A",
+                tk: "Today Snowball",
+                ru: "A",
+              },
+              price: 10,
+              image: "1785818335863-398449990-sm.webp",
+            },
+            {
+              id: "s10985",
+              name: {
+                en: "Today Snowball Yasyl",
+                tr: "A",
+                tk: "Today Snowball Yasyl",
+                ru: "A",
+              },
+              price: 10,
+              image: "1785818340285-714699338-sm.webp",
+            },
+            {
+              id: "s11057",
+              name: {
+                en: "Tort",
+                tr: "Tort",
+                tk: "Tort",
+                ru: "Tort",
+              },
+              price: 100,
+              image: "1785820994934-774981839-sm.webp",
+            },
+            {
+              id: "s11083",
+              name: {
+                en: "Ulker Chocolate Halley",
+                tr: "Ulker Chocolate Halley",
+                tk: "Ulker Chocolate Halley",
+                ru: "Ulker Chocolate Halley",
+              },
+              price: 60,
+              image: "1785821142103-419782775-sm.webp",
+            },
+            {
+              id: "s10952",
+              name: {
+                en: "Ulker Ikram",
+                tr: "Ulker Ikram",
+                tk: "Ulker Ikram",
+                ru: "Ulker Ikram",
+              },
+              price: 15,
+              image: "1785817663704-400303173-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "cigitler",
+          name: {
+            en: "Cigitler",
+            tr: "Cigitler",
+            tk: "Cigitler",
+            ru: "Cigitler",
+          },
+          items: [
+            {
+              id: "s10972",
+              name: {
+                en: "Arahis",
+                tr: "Arahis",
+                tk: "Arahis",
+                ru: "Arahis",
+              },
+              price: 100,
+              image: "1785818146239-886121699-sm.webp",
+            },
+            {
+              id: "s11075",
+              name: {
+                en: "Ermak cigit 200gr",
+                tr: "Ermak cigit 200gr",
+                tk: "Ermak cigit 200gr",
+                ru: "Ermak cigit 200gr",
+              },
+              price: 60,
+              image: "1785821087775-893519151-sm.webp",
+            },
+            {
+              id: "s11085",
+              name: {
+                en: "Martini Kadi Cigit",
+                tr: "Martini Kadi Cigit",
+                tk: "Martini Kadi Cigit",
+                ru: "Martini Kadi Cigit",
+              },
+              price: 40,
+              image: "1785821151332-791417298-sm.webp",
+            },
+            {
+              id: "s11042",
+              name: {
+                en: "Martini Semecki Gyzyl",
+                tr: "Martini Semecki Gyzyl",
+                tk: "Martini Semecki Gyzyl",
+                ru: "Martini Semecki Gyzyl",
+              },
+              price: 25,
+              image: "1785820913068-923679235-sm.webp",
+            },
+            {
+              id: "s10970",
+              name: {
+                en: "Martini Yadra",
+                tr: "Martini Yadra",
+                tk: "Martini Yadra",
+                ru: "Martini Yadra",
+              },
+              price: 25,
+              image: "1785818136661-877930273-sm.webp",
+            },
+            {
+              id: "s10964",
+              name: {
+                en: "Martini semecki",
+                tr: "Martini semecki",
+                tk: "Martini semecki",
+                ru: "Martini semecki",
+              },
+              price: 25,
+              image: "1785818101101-573941061-sm.webp",
+            },
+            {
+              id: "s10971",
+              name: {
+                en: "Molodyoznyye Semecki",
+                tr: "Molodyoznyye Semecki",
+                tk: "Molodyoznyy semecki",
+                ru: "Molodyoznyye Semecki",
+              },
+              price: 35,
+              image: "1785818141042-181061805-sm.webp",
+            },
+            {
+              id: "s10955",
+              name: {
+                en: "Pakize duzlanan cigit",
+                tr: "Pakize duzlanan cigit",
+                tk: "Pakize duzlanan cigit",
+                ru: "Pakize duzlanan cigit",
+              },
+              price: 50,
+              image: "1785817677649-931017704-sm.webp",
+            },
+            {
+              id: "s11060",
+              name: {
+                en: "Pisse Yunus",
+                tr: "Pisse Yunus",
+                tk: "Pisse Yunus",
+                ru: "Pisse Yunus",
+              },
+              price: 45,
+              image: "1785821010122-116818539-sm.webp",
+            },
+            {
+              id: "s10949",
+              name: {
+                en: "Pistacios",
+                tr: "Pistacios",
+                tk: "Pistacios",
+                ru: "Pistacios",
+              },
+              price: 100,
+              image: "1785818007080-921772924-sm.webp",
+            },
+            {
+              id: "s10950",
+              name: {
+                en: "Seeds cigit",
+                tr: "Seeds cigit",
+                tk: "Seeds cigit",
+                ru: "Seeds cigit",
+              },
+              price: 100,
+              image: "1785817654895-716206595-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "chocolate",
+          name: {
+            en: "Chocolate",
+            tr: "Cikolatalar",
+            tk: "Sokolad we suyjiler",
+            ru: "Sokolad we suyjiler",
+          },
+          items: [
+            {
+              id: "s10987",
+              name: {
+                en: "A",
+                tr: "A",
+                tk: "Albeni XXl",
+                ru: "A",
+              },
+              price: 35,
+              image: "1785818349711-370081603-sm.webp",
+            },
+            {
+              id: "s10994",
+              name: {
+                en: "Almond Wafle",
+                tr: "A",
+                tk: "Almond Wafle",
+                ru: "A",
+              },
+              price: 45,
+              image: "1785818383488-139299301-sm.webp",
+            },
+            {
+              id: "s11062",
+              name: {
+                en: "Babayewski",
+                tr: "Babayewski",
+                tk: "Babayewski",
+                ru: "Babayewski",
+              },
+              price: 100,
+              image: "1785821021927-583819966-sm.webp",
+            },
+            {
+              id: "s11097",
+              name: {
+                en: "Bounty",
+                tr: "Bounty",
+                tk: "Bounty",
+                ru: "Bounty",
+              },
+              price: 20,
+              image: "1785892524958-47887437-sm.webp",
+            },
+            {
+              id: "s11096",
+              name: {
+                en: "Bounty trio",
+                tr: "Bounty trio",
+                tk: "Bounty trio",
+                ru: "Bounty trio",
+              },
+              price: 35,
+              image: "1785892498543-784806356-sm.webp",
+            },
+            {
+              id: "s11080",
+              name: {
+                en: "Bueno Kinder",
+                tr: "Bueno Kinder",
+                tk: "Bueno Kinder",
+                ru: "Bueno Kinder",
+              },
+              price: 35,
+              image: "1785821122823-688140986-sm.webp",
+            },
+            {
+              id: "s10991",
+              name: {
+                en: "Hanuta",
+                tr: "Hanuta",
+                tk: "Hanuta",
+                ru: "Hanuta",
+              },
+              price: 35,
+              image: "1785818369118-274747748-sm.webp",
+            },
+            {
+              id: "s11074",
+              name: {
+                en: "Kinder Chocolate",
+                tr: "Kinder Chocolate",
+                tk: "Kinder Chocolate",
+                ru: "Kinder Chocolate",
+              },
+              price: 50,
+              image: "1785821082753-254723245-sm.webp",
+            },
+            {
+              id: "s11079",
+              name: {
+                en: "Kinder Maxi",
+                tr: "Kinder Maxi",
+                tk: "Kinder Maxi",
+                ru: "Kinder Maxi",
+              },
+              price: 15,
+              image: "1785821111125-900761867-sm.webp",
+            },
+            {
+              id: "s11001",
+              name: {
+                en: "Kinder chocolate",
+                tr: "Kinder chocolate",
+                tk: "Kinder chocolate",
+                ru: "Kinder chocolate",
+              },
+              price: 25,
+              image: "1785819128021-838688250-sm.webp",
+            },
+            {
+              id: "s11084",
+              name: {
+                en: "Magnolia sokolat",
+                tr: "Magnolia sokolat",
+                tk: "Magnolia sokolat",
+                ru: "Magnolia sokolat",
+              },
+              price: 60,
+              image: "1785821146554-562806284-sm.webp",
+            },
+            {
+              id: "s11000",
+              name: {
+                en: "Milka",
+                tr: "Milka",
+                tk: "Milka",
+                ru: "Milka",
+              },
+              price: 60,
+              image: "1785818411032-94476324-sm.webp",
+            },
+            {
+              id: "s11003",
+              name: {
+                en: "Milka Chococ Wafer",
+                tr: "Milka Chococ Wafer",
+                tk: "Milka Chococ Wafer",
+                ru: "Milka Chococ Wafer",
+              },
+              price: 25,
+              image: "1785819144474-302545405-sm.webp",
+            },
+            {
+              id: "s11076",
+              name: {
+                en: "MilkyWay",
+                tr: "MilkyWay",
+                tk: "MilkyWay",
+                ru: "MilkyWay",
+              },
+              price: 15,
+              image: "1785821093118-421353638-sm.webp",
+            },
+            {
+              id: "s10988",
+              name: {
+                en: "Nutella",
+                tr: "A",
+                tk: "Nutella",
+                ru: "A",
+              },
+              price: 150,
+              image: "1785818354179-261630242-sm.webp",
+            },
+            {
+              id: "s10999",
+              name: {
+                en: "Olyenka",
+                tr: "Olyenka",
+                tk: "Olyenka",
+                ru: "Olyenka",
+              },
+              price: 60,
+              image: "1785818407090-228969710-sm.webp",
+            },
+            {
+              id: "s10962",
+              name: {
+                en: "Picnic sokolad",
+                tr: "Picnic sokolad",
+                tk: "Picnic sokolad",
+                ru: "Picnic sokolad",
+              },
+              price: 25,
+              image: "1785818061123-912675389-sm.webp",
+            },
+            {
+              id: "s10993",
+              name: {
+                en: "Rafaella",
+                tr: "Rafaella",
+                tk: "Rafaella",
+                ru: "Rafaella",
+              },
+              price: 90,
+              image: "1785818378244-513851954-sm.webp",
+            },
+            {
+              id: "s10990",
+              name: {
+                en: "Raffaella",
+                tr: "A",
+                tk: "Raffaella",
+                ru: "A",
+              },
+              price: 35,
+              image: "1785818364883-855782643-sm.webp",
+            },
+            {
+              id: "s10992",
+              name: {
+                en: "Raffaello",
+                tr: "A",
+                tk: "Raffaello",
+                ru: "A",
+              },
+              price: 125,
+              image: "1785818373671-144610026-sm.webp",
+            },
+            {
+              id: "s11061",
+              name: {
+                en: "Roshen",
+                tr: "Roshen",
+                tk: "Roshen",
+                ru: "Roshen",
+              },
+              price: 50,
+              image: "1785821014639-863488622-sm.webp",
+            },
+            {
+              id: "s11071",
+              name: {
+                en: "Russia Sokolad",
+                tr: "Russia Sokolad",
+                tk: "Russia Sokolad",
+                ru: "Russia Sokolad",
+              },
+              price: 35,
+              image: "1785821065269-762328348-sm.webp",
+            },
+            {
+              id: "s11099",
+              name: {
+                en: "Snicker Plombir",
+                tr: "Snicker Plombir",
+                tk: "Snicker Plombir",
+                ru: "Snicker Plombir",
+              },
+              price: 35,
+              image: "1785892600263-709744108-sm.webp",
+            },
+            {
+              id: "s11100",
+              name: {
+                en: "Snickers Belyy",
+                tr: "Snickers Belyy",
+                tk: "Snickers Belyy",
+                ru: "Snickers Belyy",
+              },
+              price: 35,
+              image: "1785892631777-278756433-sm.webp",
+            },
+            {
+              id: "s11098",
+              name: {
+                en: "Snickers Super",
+                tr: "Snickers Super",
+                tk: "Snickers Super",
+                ru: "Snickers Super",
+              },
+              price: 35,
+              image: "1785892558857-140777602-sm.webp",
+            },
+            {
+              id: "s11089",
+              name: {
+                en: "Snikers",
+                tr: "Snikers",
+                tk: "Snikers",
+                ru: "Snikers",
+              },
+              price: 20,
+              image: "1785891811696-917880220-sm.webp",
+            },
+            {
+              id: "s11047",
+              name: {
+                en: "Sokokrem",
+                tr: "Sokokrem",
+                tk: "Sokokrem",
+                ru: "Sokokrem",
+              },
+              price: 60,
+              image: "1785820945811-515514089-sm.webp",
+            },
+            {
+              id: "s10981",
+              name: {
+                en: "Sokolad Molocnyy",
+                tr: "A",
+                tk: "Sokolad Molocnyy",
+                ru: "A",
+              },
+              price: 15,
+              image: "1785818320106-344602770-sm.webp",
+            },
+            {
+              id: "s10995",
+              name: {
+                en: "Sokolad minyon",
+                tr: "Sokolad minyon",
+                tk: "Sokolad minyon",
+                ru: "Sokolad minyon",
+              },
+              price: 45,
+              image: "1785818387779-936736875-sm.webp",
+            },
+            {
+              id: "s10998",
+              name: {
+                en: "Sokolad s Tertim mindal",
+                tr: "Sokolad s Tertim mindal",
+                tk: "Sokolad s Tertim mindal",
+                ru: "Sokolad s Tertim mindal",
+              },
+              price: 60,
+              image: "1785818402938-703535699-sm.webp",
+            },
+            {
+              id: "s10996",
+              name: {
+                en: "Ulker cikolata",
+                tr: "Ulker cikolata",
+                tk: "Ulker cikolata",
+                ru: "Ulker cikolata",
+              },
+              price: 100,
+              image: "1785818392258-277442398-sm.webp",
+            },
+            {
+              id: "s10997",
+              name: {
+                en: "Ulker cikolata 60bitter",
+                tr: "Ulker cikolata 60bitter",
+                tk: "Ulker cikolata 60bitter",
+                ru: "Ulker cikolata 60bitter",
+              },
+              price: 100,
+              image: "1785818396767-268111935-sm.webp",
+            },
+            {
+              id: "s11101",
+              name: {
+                en: "KitKat Chunky",
+                tr: "KitKat Chunky",
+                tk: "KitKat Chunky",
+                ru: "KitKat Chunky",
+              },
+              price: 20,
+              image: "1785892677253-156303699-sm.webp",
+            },
+            {
+              id: "s11102",
+              name: {
+                en: "Mars",
+                tr: "Mars",
+                tk: "Mars",
+                ru: "Mars",
+              },
+              price: 20,
+              image: "1785892722513-793109047-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "cipsiler",
+          name: {
+            en: "Cipsiler",
+            tr: "Cipsiler",
+            tk: "Cipsiler",
+            ru: "Cipsiler",
+          },
+          items: [
+            {
+              id: "s11043",
+              name: {
+                en: "Doritos",
+                tr: "Doritos",
+                tk: "Doritos",
+                ru: "Doritos",
+              },
+              price: 60,
+              image: "1785820925460-326167729-sm.webp",
+            },
+            {
+              id: "s11072",
+              name: {
+                en: "Hrus team",
+                tr: "Hrus team",
+                tk: "Hrus team",
+                ru: "Hrus team",
+              },
+              price: 30,
+              image: "1785821070710-318428858-sm.webp",
+            },
+            {
+              id: "s11044",
+              name: {
+                en: "Lays Cipsi",
+                tr: "Lays Cipsi",
+                tk: "Lays Cipsi",
+                ru: "Lays Cipsi",
+              },
+              price: 60,
+              image: "1785820929613-920059266-sm.webp",
+            },
+            {
+              id: "s10953",
+              name: {
+                en: "Pringles",
+                tr: "Pringles",
+                tk: "Pringles",
+                ru: "Pringles",
+              },
+              price: 65,
+              image: "1785817668381-687989740-sm.webp",
+            },
+            {
+              id: "s10954",
+              name: {
+                en: "Pringles",
+                tr: "Pringles",
+                tk: "Pringles",
+                ru: "Pringles",
+              },
+              price: 65,
+              image: "1785817673051-70119228-sm.webp",
+            },
+            {
+              id: "s11049",
+              name: {
+                en: "Pringles kici",
+                tr: "Pringles kici",
+                tk: "Pringles kici",
+                ru: "Pringles kici",
+              },
+              price: 35,
+              image: "1785820954642-213338437-sm.webp",
+            },
+            {
+              id: "s11045",
+              name: {
+                en: "Turan Cipsi",
+                tr: "Turan Cipsi",
+                tk: "Turan Cipsi",
+                ru: "Turan Cipsi",
+              },
+              price: 30,
+              image: "1785820935737-676829350-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "marmelat",
+          name: {
+            en: "Marmelat",
+            tr: "Marmelat",
+            tk: "Marmelat",
+            ru: "Marmelat",
+          },
+          items: [
+            {
+              id: "s10956",
+              name: {
+                en: "Mambo Marmelat",
+                tr: "Mambo Marmelat",
+                tk: "Mambo Marmelat",
+                ru: "Mambo Marmelat",
+              },
+              price: 40,
+              image: "1785818019086-296008911-sm.webp",
+            },
+            {
+              id: "s10957",
+              name: {
+                en: "Mambo Marmelat",
+                tr: "Mambo Marmelat",
+                tk: "Mambo Marmelat",
+                ru: "Mambo Marmelat",
+              },
+              price: 40,
+              image: "1785818026192-458423504-sm.webp",
+            },
+            {
+              id: "s10975",
+              name: {
+                en: "Martini Yadra",
+                tr: "A",
+                tk: "Martini Yadra",
+                ru: "A",
+              },
+              price: 25,
+              image: "1785818162309-200718501-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "kireski",
+          name: {
+            en: "Kireski",
+            tr: "Kireski",
+            tk: "Kireski",
+            ru: "Kireski",
+          },
+          items: [
+            {
+              id: "s10960",
+              name: {
+                en: "Kireski",
+                tr: "Kireski",
+                tk: "Kireski",
+                ru: "Kireski",
+              },
+              price: 10,
+              image: "1785818047353-984392073-sm.webp",
+            },
+            {
+              id: "s10961",
+              name: {
+                en: "Kireski",
+                tr: "Kireski",
+                tk: "Kireski",
+                ru: "Kireski",
+              },
+              price: 10,
+              image: "1785818054758-666745654-sm.webp",
+            },
+            {
+              id: "s10959",
+              name: {
+                en: "Korocki bekon",
+                tr: "Korocki bekon",
+                tk: "Korocki bekon",
+                ru: "Korocki bekon",
+              },
+              price: 20,
+              image: "1785818040824-268055276-sm.webp",
+            },
+            {
+              id: "s10958",
+              name: {
+                en: "Korocki syr i semga",
+                tr: "Korocki syr i semga",
+                tk: "Korocki syr i semga",
+                ru: "Korocki syr i semga",
+              },
+              price: 20,
+              image: "1785818032474-591635642-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "shortik",
+          name: {
+            en: "Shortik",
+            tr: "Shortik",
+            tk: "Shortik",
+            ru: "Shortik",
+          },
+          items: [
+            {
+              id: "s11013",
+              name: {
+                en: "A",
+                tr: "A",
+                tk: "A",
+                ru: "A",
+              },
+              price: 0,
+              image: "1785819201749-840839167-sm.webp",
+            },
+            {
+              id: "s11014",
+              name: {
+                en: "Shortik No3",
+                tr: "Shortik No3",
+                tk: "Shortik No3",
+                ru: "Shortik No3",
+              },
+              price: 100,
+              image: "1785819206484-819440331-sm.webp",
+            },
+            {
+              id: "s11011",
+              name: {
+                en: "shortik",
+                tr: "shortik",
+                tk: "shortik",
+                ru: "shortik",
+              },
+              price: 100,
+              image: "1785819189408-246754102-sm.webp",
+            },
+            {
+              id: "s11012",
+              name: {
+                en: "shortik No1",
+                tr: "shortik No1",
+                tk: "shortik No1",
+                ru: "shortik No1",
+              },
+              price: 0,
+              image: "1785819196543-803571145-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "harytlar",
+          name: {
+            en: "Harytlar",
+            tr: "Harytlar",
+            tk: "Harytlar",
+            ru: "Harytlar",
+          },
+          items: [
+            {
+              id: "s11029",
+              name: {
+                en: "Awaza Stakan Sowgatlyk",
+                tr: "Awaza Stakan Sowgatlyk",
+                tk: "Awaza Stakan Sowgatlyk",
+                ru: "Awaza Stakan Sowgatlyk",
+              },
+              price: 50,
+              image: "1785819352124-374111540-sm.webp",
+            },
+            {
+              id: "s11025",
+              name: {
+                en: "Awaza rucka",
+                tr: "Awaza rucka",
+                tk: "Awaza rucka",
+                ru: "Awaza rucka",
+              },
+              price: 10,
+              image: "1785819331304-386327766-sm.webp",
+            },
+            {
+              id: "s11026",
+              name: {
+                en: "Awaza rucka gara",
+                tr: "Awaza rucka gara",
+                tk: "Awaza rucka gara",
+                ru: "Awaza rucka gara",
+              },
+              price: 10,
+              image: "1785819336159-298994484-sm.webp",
+            },
+            {
+              id: "s11027",
+              name: {
+                en: "Awaza rucka gyzyl",
+                tr: "Awaza rucka gyzyl",
+                tk: "Awaza rucka gyzyl",
+                ru: "Awaza rucka gyzyl",
+              },
+              price: 10,
+              image: "1785819340736-872647409-sm.webp",
+            },
+            {
+              id: "s11028",
+              name: {
+                en: "Top kici",
+                tr: "Top kici",
+                tk: "Top kici",
+                ru: "Top kici",
+              },
+              price: 0,
+              image: "1785819347590-193934098-sm.webp",
+            },
+            {
+              id: "s11030",
+              name: {
+                en: "Top uly",
+                tr: "Top uly",
+                tk: "Top uly",
+                ru: "Top uly",
+              },
+              price: 0,
+              image: "1785819356224-162344219-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "caylar",
+          name: {
+            en: "Caylar",
+            tr: "Caylar",
+            tk: "Caylar",
+            ru: "Caylar",
+          },
+          items: [
+            {
+              id: "s11039",
+              name: {
+                en: "Arab Tea",
+                tr: "Arab Tea",
+                tk: "Arab Tea",
+                ru: "Arab Tea",
+              },
+              price: 30,
+              image: "1785820899236-964547421-sm.webp",
+            },
+            {
+              id: "s11040",
+              name: {
+                en: "Cay Ozbek",
+                tr: "Cay Ozbek",
+                tk: "Cay Ozbek",
+                ru: "Cay Ozbek",
+              },
+              price: 30,
+              image: "1785820903112-997064937-sm.webp",
+            },
+            {
+              id: "s11038",
+              name: {
+                en: "Gara Cay",
+                tr: "Gara Cay",
+                tk: "Gara Cay",
+                ru: "Gara Cay",
+              },
+              price: 50,
+              image: "1785820895121-873226593-sm.webp",
+            },
+            {
+              id: "s11065",
+              name: {
+                en: "Kenya Black Tea",
+                tr: "Kenya Black Tea",
+                tk: "Kenya Black Tea",
+                ru: "Kenya Black Tea",
+              },
+              price: 20,
+              image: "1785821035533-221654469-sm.webp",
+            },
+            {
+              id: "s11048",
+              name: {
+                en: "Rysgal cay",
+                tr: "Rysgal cay",
+                tk: "Rysgal cay",
+                ru: "Rysgal cay",
+              },
+              price: 15,
+              image: "1785820950088-245840628-sm.webp",
+            },
+            {
+              id: "s11041",
+              name: {
+                en: "Sah Gold Cay",
+                tr: "Sah Gold Cay",
+                tk: "Sah Gold Cay",
+                ru: "Sah Gold Cay",
+              },
+              price: 30,
+              image: "1785820907075-812434222-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "sakgyc",
+          name: {
+            en: "Sakgyc",
+            tr: "Sakgyc",
+            tk: "Sakgyc",
+            ru: "Sakgyc",
+          },
+          items: [
+            {
+              id: "s11090",
+              name: {
+                en: "Dirol Yasyl Klubnika",
+                tr: "Dirol Yasyl Klubnika",
+                tk: "Dirol Yasyl Klubnika",
+                ru: "Dirol Yasyl Klubnika",
+              },
+              price: 10,
+              image: "1785892232056-298288386-sm.webp",
+            },
+            {
+              id: "s11092",
+              name: {
+                en: "Mentos",
+                tr: "Mentos",
+                tk: "Mentos",
+                ru: "Mentos",
+              },
+              price: 15,
+              image: "1785892311117-588886213-sm.webp",
+            },
+            {
+              id: "s11093",
+              name: {
+                en: "Mentos Ice",
+                tr: "Mentos Ice",
+                tk: "Mentos Ice",
+                ru: "Mentos Ice",
+              },
+              price: 15,
+              image: "1785892343960-885770731-sm.webp",
+            },
+            {
+              id: "s11094",
+              name: {
+                en: "Mentos Pure Fresh",
+                tr: "Mentos Pure Fresh",
+                tk: "Mentos Pure Fresh",
+                ru: "Mentos Pure Fresh",
+              },
+              price: 15,
+              image: "1785892372222-19458665-sm.webp",
+            },
+            {
+              id: "s11095",
+              name: {
+                en: "Mentos Pure White",
+                tr: "Mentos Pure White",
+                tk: "Mentos Pure White",
+                ru: "Mentos Pure White",
+              },
+              price: 55,
+              image: "1785892409504-931869058-sm.webp",
+            },
+            {
+              id: "s11091",
+              name: {
+                en: "Mentos uly",
+                tr: "Mentos uly",
+                tk: "Mentos uly",
+                ru: "Mentos uly",
+              },
+              price: 20,
+              image: "1785892285740-811477678-sm.webp",
+            },
+          ],
+        },
+        {
+          id: "oyunjaklar",
+          name: {
+            en: "Oyunjaklar",
+            tr: "Oyunjaklar",
+            tk: "Oyunjaklar",
+            ru: "Oyunjaklar",
+          },
+          items: [
+            {
+              id: "s11111",
+              name: {
+                en: "Squish kici",
+                tr: "Squish",
+                tk: "Squish",
+                ru: "Squish",
+              },
+              price: 50,
+              image: "1785893269606-677538493-sm.webp",
+            },
+            {
+              id: "s11112",
+              name: {
+                en: "Squish Uly",
+                tr: "Squish Uly",
+                tk: "Squish Uly",
+                ru: "Squish Uly",
+              },
+              price: 90,
+              image: "1785893370521-44381448-sm.webp",
+            },
+          ],
+        },
+      ];
+
+      /* ==========================================================================
+   5. APP
+   ========================================================================== */
+      // Dil, tema ve kişi bilgisi iki sayfada ortak; sepet ve sayaç ayrı —
+      // yoksa mağazayı açmak yemek sepetini siler.
+      // Language, theme and the customer details are shared with the menu page;
+      // the basket and the counter are not — sharing them would let one page
+      // wipe the other's cart.
+      const LS = {
+        cart: "sm.store.cart",
+        lang: "sm.market.lang",
+        theme: "sm.market.theme",
+        who: "sm.market.who",
+        counted: "sm.store.counted", // son sayım zamanı / last counted at (ms)
+      };
+
+      const $ = (sel) => document.querySelector(sel);
+      const els = {
+        html: document.documentElement,
+        header: $("header.topbar"),
+        heroDecor: $("#heroDecor"),
+        heroContent: $("#heroContent"),
+        heroLogo: $("#heroLogo"),
+        heroLeft: $("#heroLeft"),
+        heroRight: $("#heroRight"),
+        bannerWrap: $("#bannerWrap"),
+        bannerTrack: $("#bannerTrack"),
+        bannerDots: $("#bannerDots"),
+        catrail: $("#catrail"),
+        catrailNav: $("nav.catrail"),
+        content: $("#content"),
+        langBtn: $("#langBtn"),
+        langMenu: $("#langMenu"),
+        langFlag: $("#langFlag"),
+        langCode: $("#langCode"),
+        themeBtn: $("#themeBtn"),
+        iconSun: $("#iconSun"),
+        iconMoon: $("#iconMoon"),
+        fab: $("#fab"),
+        fabBadge: $("#fabBadge"),
+        visits: $("#visits"),
+        visitsNum: $("#visitsNum"),
+        topOrder: $("#topOrder"),
+        backdrop: $("#backdrop"),
+        sheet: $("#sheet"),
+        sheetBody: $("#sheetBody"),
+        sheetCount: $("#sheetCount"),
+        sheetClose: $("#sheetClose"),
+        totalValue: $("#totalValue"),
+        orderBtn: $("#orderBtn"),
+        clearBtn: $("#clearBtn"),
+        pop: $("#pop"),
+        popBack: $("#popBack"),
+        popCard: $("#popCard"),
+        popClose: $("#popClose"),
+        popImg: $("#popImg"),
+        popImgWrap: $("#popImgWrap"),
+        popBadge: $("#popBadge"),
+        popTitle: $("#popTitle"),
+        popPricePill: $("#popPricePill"),
+        popPriceBig: $("#popPriceBig"),
+        popStepper: $("#popStepper"),
+        popQty: $("#popQty"),
+        popDec: $("#popDec"),
+        popInc: $("#popInc"),
+        popCta: $("#popCta"),
+        switchFab: $("#switchFab"),
+        toasts: $("#toasts"),
+      };
+
+      const store = (() => {
+        const read = (key, fallback) => {
+          try {
+            const v = localStorage.getItem(key);
+            return v == null ? fallback : JSON.parse(v);
+          } catch {
+            return fallback;
+          }
+        };
+        const write = (key, value) => {
+          try {
+            localStorage.setItem(key, JSON.stringify(value));
+          } catch {
+            /* private mode */
+          }
+        };
+        return { read, write };
+      })();
+
+      const state = {
+        lang: LANGS.some((l) => l.code === store.read(LS.lang, null))
+          ? store.read(LS.lang, null)
+          : CONFIG.defaultLanguage,
+        active: MENU.length ? MENU[0].id : null, // category highlighted in the rail
+        cart: store.read(LS.cart, {}), // { productId: qty }
+        who: store.read(LS.who, { name: "", address: "" }),
+        sheetOpen: false,
+        popId: null, // product shown in the big popup
+      };
+
+      const PRODUCTS = new Map();
+      const CATEGORY_OF = new Map();
+      MENU.forEach((cat) =>
+        cat.items.forEach((p) => {
+          PRODUCTS.set(p.id, p);
+          CATEGORY_OF.set(p.id, cat);
+        }),
+      );
+
+      const t = (key) => (T[state.lang] || T.en)[key] || key;
+      const tr = (obj) =>
+        obj ? obj[state.lang] || obj.en || Object.values(obj)[0] || "" : "";
+      const nameOf = (item) => tr(item.name);
+      const money = (n) => {
+        const num = Number(n).toFixed(2).replace(/\.00$/, "");
+        return CONFIG.currencyAfter
+          ? `${num} ${CONFIG.currency}`
+          : `${CONFIG.currency}${num}`;
+      };
+      const imgUrl = (file) => `uploads_products/${file}`;
+      const escape = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      const cartCount = () =>
+        Object.values(state.cart).reduce((n, q) => n + q, 0);
+      const cartTotal = () =>
+        Object.entries(state.cart).reduce((sum, [id, q]) => {
+          const p = PRODUCTS.get(id);
+          return p ? sum + p.price * q : sum;
+        }, 0);
+
+      const lockScroll = () => {
+        document.body.classList.toggle(
+          "locked",
+          state.sheetOpen || state.popId !== null,
+        );
+      };
+
+      /* -------------------------------------------------------------------- hero */
+      function renderHero() {
+        els.heroLogo.src = CONFIG.logo;
+        els.heroLogo.alt = CONFIG.brand;
+        els.heroLeft.src = CONFIG.heroLeft;
+        els.heroRight.src = CONFIG.heroRight;
+        [els.heroLogo, els.heroLeft, els.heroRight].forEach((img) => {
+          img.onerror = () => {
+            img.style.visibility = "hidden";
+          };
+        });
+      }
+
+      // Both layers trail the page at a fraction of the scroll speed and the hero
+      // fades out as it leaves — the same feel as the Electron menu.
+      function parallax(y) {
+        els.heroContent.style.transform = `translate3d(0, ${Math.min(y * 0.4, 200)}px, 0)`;
+        els.heroDecor.style.transform = `translate3d(0, ${Math.min(y * 0.22, 110)}px, 0)`;
+        els.html.style.setProperty(
+          "--hero-op",
+          String(Math.max(0, 1 - y / 220)),
+        );
+      }
+
+      /* ------------------------------------------------------------------ banner */
+      // A clone of the last banner sits in front and a clone of the first at the end,
+      // so sliding past either edge keeps moving the same way instead of rewinding.
+      const banner = {
+        slides: [],
+        index: 0,
+        first: 0,
+        last: 0,
+        loop: false,
+        timer: null,
+        startX: null,
+        dragX: 0,
+      };
+
+      function renderBanner() {
+        if (!BANNERS.length) {
+          els.bannerWrap.style.display = "none";
+          return;
+        }
+
+        banner.loop = BANNERS.length > 1;
+        banner.slides = banner.loop
+          ? [BANNERS[BANNERS.length - 1], ...BANNERS, BANNERS[0]]
+          : BANNERS.slice();
+        banner.first = banner.loop ? 1 : 0;
+        banner.last = banner.loop ? BANNERS.length : 0;
+        banner.index = banner.first;
+
+        els.bannerTrack.innerHTML = banner.slides
+          .map((b) => {
+            const title = tr(b.title),
+              text = tr(b.text);
+            return `
+      <div class="slide">
+        ${b.image ? `<img src="${imgUrl(b.image)}" alt="${escape(title)}" draggable="false" onerror="this.remove()" />` : ""}
+        <div class="veil"></div>
+        ${title || text ? `<div class="txt">${title ? `<b>${escape(title)}</b>` : ""}${text ? `<span>${escape(text)}</span>` : ""}</div>` : ""}
+      </div>`;
+          })
+          .join("");
+
+        els.bannerDots.innerHTML = banner.loop
+          ? BANNERS.map(
+              (_, i) =>
+                `<button type="button" data-dot="${i}" aria-label="${i + 1}"></button>`,
+            ).join("")
+          : "";
+
+        moveBanner(false);
+        restartBanner();
+      }
+
+      // A clone shows the same picture as its twin, so stepping from either is equal.
+      const twin = (i) =>
+        i === banner.slides.length - 1
+          ? banner.first
+          : i === 0
+            ? banner.last
+            : i;
+
+      function moveBanner(animate = true) {
+        els.bannerTrack.style.transition = animate
+          ? "transform 500ms ease-in-out"
+          : "none";
+        els.bannerTrack.style.transform = `translateX(calc(-${banner.index * 100}% + ${banner.dragX}px))`;
+        const dot = banner.loop
+          ? (banner.index - 1 + BANNERS.length) % BANNERS.length
+          : 0;
+        els.bannerDots.querySelectorAll("[data-dot]").forEach((b) => {
+          b.setAttribute("aria-current", Number(b.dataset.dot) === dot);
+        });
+      }
+
+      function stepBanner(dir) {
+        banner.index = twin(banner.index) + dir;
+        moveBanner(true);
+      }
+
+      function stopBanner() {
+        if (banner.timer) clearInterval(banner.timer);
+        banner.timer = null;
+      }
+
+      function restartBanner() {
+        stopBanner();
+        if (!banner.loop) return;
+        banner.timer = setInterval(
+          () => stepBanner(1),
+          CONFIG.bannerAutoplayMs,
+        );
+      }
+
+      // Once the slide onto a clone has finished we are visually already on its twin,
+      // so jump to the twin's real index with the transition switched off.
+      els.bannerTrack.addEventListener("transitionend", (e) => {
+        if (!banner.loop || e.target !== els.bannerTrack) return;
+        const next = twin(banner.index);
+        if (next === banner.index) return;
+        banner.index = next;
+        moveBanner(false);
+        void els.bannerTrack.offsetHeight; // commit before transitions come back
+      });
+
+      els.bannerTrack.addEventListener("pointerdown", (e) => {
+        if (!banner.loop) return;
+        stopBanner();
+        banner.startX = e.clientX;
+        els.bannerTrack.classList.add("dragging");
+        els.bannerTrack.setPointerCapture(e.pointerId);
+      });
+
+      els.bannerTrack.addEventListener("pointermove", (e) => {
+        if (banner.startX === null) return;
+        banner.dragX = e.clientX - banner.startX;
+        moveBanner(false);
+      });
+
+      function endBannerDrag(e) {
+        if (banner.startX === null) return;
+        const dx = e.clientX - banner.startX;
+        banner.startX = null;
+        banner.dragX = 0;
+        els.bannerTrack.classList.remove("dragging");
+        // A phone needs a shorter commit distance than a wide tablet, so scale it.
+        const threshold = Math.max(50, els.bannerTrack.clientWidth * 0.15);
+        if (dx <= -threshold) stepBanner(1);
+        else if (dx >= threshold) stepBanner(-1);
+        else moveBanner(true);
+        restartBanner();
+      }
+      els.bannerTrack.addEventListener("pointerup", endBannerDrag);
+      els.bannerTrack.addEventListener("pointercancel", endBannerDrag);
+
+      els.bannerDots.addEventListener("click", (e) => {
+        const dot = e.target.closest("[data-dot]");
+        if (!dot) return;
+        banner.index = Number(dot.dataset.dot) + banner.first;
+        moveBanner(true);
+        restartBanner();
+      });
+
+      /* -------------------------------------------------------------- categories */
+      function renderCategories() {
+        els.catrail.innerHTML = MENU.map((cat) => {
+          const thumb = cat.image
+            ? `<img src="${imgUrl(cat.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />`
+            : "";
+          return `
+      <button class="chip${thumb ? "" : " plain"}" type="button" data-cat="${escape(cat.id)}" aria-selected="${state.active === cat.id}">
+        ${thumb}${escape(nameOf(cat))} <span class="count">${cat.items.length}</span>
+      </button>`;
+        }).join("");
+      }
+
+      // Where the page must land so a section header clears the header + rail.
+      const anchorOffset = () =>
+        els.header.offsetHeight + els.catrailNav.offsetHeight + 10;
+
+      let clickScrolling = null;
+
+      function scrollToCategory(id) {
+        const section = document.getElementById(`cat-${id}`);
+        if (!section) return;
+        setActive(id);
+        // While the smooth scroll runs, the spy would fight it over the active chip.
+        clearTimeout(clickScrolling);
+        clickScrolling = setTimeout(() => {
+          clickScrolling = null;
+        }, 700);
+        const top =
+          section.getBoundingClientRect().top + window.scrollY - anchorOffset();
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      }
+
+      function setActive(id) {
+        if (state.active === id) return;
+        state.active = id;
+        const chips = [...els.catrail.querySelectorAll(".chip")];
+        chips.forEach((c) =>
+          c.setAttribute("aria-selected", c.dataset.cat === id),
+        );
+        const chip = chips.find((c) => c.dataset.cat === id);
+        if (!chip) return;
+        // Scroll the rail itself — scrollIntoView would drag the whole page along.
+        const target =
+          chip.offsetLeft - (els.catrail.clientWidth - chip.offsetWidth) / 2;
+        els.catrail.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+      }
+
+      // Scrolling down walks the rail through the categories, like the Electron app.
+      function spy() {
+        if (clickScrolling) return;
+        const anchor = anchorOffset() + 8;
+        const sections = els.content.querySelectorAll(".section");
+        if (!sections.length) return;
+        let current = null;
+        for (const s of sections) {
+          const r = s.getBoundingClientRect();
+          if (r.top - anchor <= 0 && r.bottom - anchor > 0) {
+            current = s.dataset.cat;
+            break;
+          }
+        }
+        // Above the first section (still on the hero) keep the first chip lit; past
+        // the last one keep the last chip lit.
+        if (!current) {
+          current =
+            sections[0].getBoundingClientRect().top - anchor > 0
+              ? MENU[0].id
+              : MENU[MENU.length - 1].id;
+        }
+        setActive(current);
+      }
+
+      /* ------------------------------------------------------------ product grid */
+      // One product = one card div.
+      function card(p) {
+        const qty = state.cart[p.id] || 0;
+        const media = p.image
+          ? `<img src="${imgUrl(p.image)}" alt="${escape(nameOf(p))}" loading="lazy" decoding="async" onerror="this.style.display='none'" />`
+          : "";
+        return `
+    <div class="card${qty ? " in-cart" : ""}" data-id="${escape(p.id)}">
+      <div class="card-img">
+        <span class="ph" aria-hidden="true">🍽️</span>
+        ${media}
+        <span class="qty-flag">${qty}</span>
+        <span class="zoom" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${escape(nameOf(p))}</div>
+        <div class="card-foot">
+          <span class="price">${escape(money(p.price))}</span>
+          <button class="add" type="button" data-act="inc" aria-label="+">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="stepper">
+            <button type="button" data-act="dec" aria-label="-">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
+            </button>
+            <button type="button" data-act="inc" aria-label="+">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+      }
+
+      function renderContent() {
+        els.content.innerHTML = MENU.map(
+          (cat) => `
+    <section class="section" id="cat-${escape(cat.id)}" data-cat="${escape(cat.id)}">
+      <div class="section-head">
+        <h2>${escape(nameOf(cat))}</h2>
+        <span class="n">${cat.items.length} ${escape(t("item"))}</span>
+      </div>
+      <div class="grid">${cat.items.map(card).join("")}</div>
+    </section>`,
+        ).join("");
+      }
+
+      /* ------------------------------------------------------- big image popup */
+      function renderPop() {
+        const p = PRODUCTS.get(state.popId);
+        if (!p) return;
+        const qty = state.cart[p.id] || 0;
+
+        els.popTitle.textContent = nameOf(p);
+        els.popBadge.textContent = tr(CATEGORY_OF.get(p.id)?.name);
+        els.popBadge.style.display = els.popBadge.textContent ? "" : "none";
+        els.popPricePill.textContent = money(p.price);
+        els.popPriceBig.textContent = money(p.price);
+
+        // Popup tek bir <img> kullanır: yeni ürün açılırken parıltıyı geri getir.
+        // The popup reuses one <img>, so bring the shimmer back for each product.
+        if (p.image) {
+          const url = imgUrl(p.image);
+          if (els.popImg.getAttribute("src") !== url) {
+            els.popImgWrap.classList.remove("ok");
+            els.popImg.src = url;
+          }
+          els.popImg.alt = nameOf(p);
+          els.popImg.style.display = "";
+          if (els.popImg.complete && els.popImg.currentSrc)
+            els.popImgWrap.classList.add("ok");
+        } else {
+          els.popImg.removeAttribute("src");
+          els.popImg.style.display = "none";
+          els.popImgWrap.classList.add("ok"); // resim yok, parıltı da yok / no image, no shimmer
+        }
+
+        els.popQty.textContent = qty;
+        els.popStepper.classList.toggle("on", qty > 0);
+        els.popCta.textContent = qty > 0 ? t("viewCart") : t("addToCart");
+      }
+
+      function openProduct(id) {
+        if (!PRODUCTS.has(id)) return;
+        state.popId = id;
+        renderPop();
+        els.pop.classList.add("open");
+        els.popBack.classList.add("open");
+        lockScroll();
+        // Android's back gesture should close the picture, not leave the page.
+        history.pushState({ productPopup: true }, "", location.href);
+      }
+
+      function closeProduct(fromPopState = false) {
+        if (state.popId === null) return;
+        state.popId = null;
+        els.pop.classList.remove("open");
+        els.popBack.classList.remove("open");
+        lockScroll();
+        if (!fromPopState && history.state && history.state.productPopup)
+          history.back();
+      }
+
+      window.addEventListener("popstate", () => {
+        if (state.popId !== null) closeProduct(true);
+      });
+
+      els.popBack.addEventListener("click", () => closeProduct());
+      els.popClose.addEventListener("click", () => closeProduct());
+      els.pop.addEventListener("click", (e) => {
+        if (!els.popCard.contains(e.target)) closeProduct();
+      });
+
+      els.popInc.addEventListener("click", () => {
+        setQty(state.popId, (state.cart[state.popId] || 0) + 1);
+      });
+      els.popDec.addEventListener("click", () => {
+        setQty(state.popId, (state.cart[state.popId] || 0) - 1);
+      });
+      els.popCta.addEventListener("click", () => {
+        const qty = state.cart[state.popId] || 0;
+        if (qty > 0) {
+          closeProduct();
+          openSheet(true);
+          return;
+        }
+        add(state.popId);
+      });
+
+      /* -------------------------------------------------------------------- cart */
+      function renderCart() {
+        const ids = Object.keys(state.cart);
+        const count = cartCount();
+
+        els.fabBadge.textContent = count;
+        els.fabBadge.classList.toggle("on", count > 0);
+        els.topOrder.classList.toggle("on", count > 0);
+        els.sheetCount.textContent = count ? `${count} ${t("item")}` : "";
+        els.totalValue.textContent = money(cartTotal());
+        els.orderBtn.disabled = count === 0;
+
+        if (!ids.length) {
+          els.sheetBody.innerHTML = `<div class="empty"><div class="big">🛒</div><div>${escape(t("empty"))}</div><div>${escape(t("emptyHint"))}</div></div>`;
+          return;
+        }
+
+        const lines = ids
+          .map((id) => {
+            const p = PRODUCTS.get(id);
+            if (!p) return "";
+            const qty = state.cart[id];
+            const media = p.image
+              ? `<img src="${imgUrl(p.image)}" alt="" loading="lazy" onerror="this.remove()" />`
+              : "";
+            return `
+      <div class="line" data-id="${escape(id)}">
+        <div class="line-img">${media}</div>
+        <div class="line-main">
+          <div class="line-name">${escape(nameOf(p))}</div>
+          <div class="line-price">${escape(money(p.price))}</div>
+        </div>
+        <div class="stepper" style="display:flex">
+          <button type="button" data-act="dec" aria-label="-">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
+          </button>
+          <span class="q">${qty}</span>
+          <button type="button" data-act="inc" aria-label="+">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="line-sum">${escape(money(p.price * qty))}</div>
+      </div>`;
+          })
+          .join("");
+
+        els.sheetBody.innerHTML = `${lines}
+    <div class="fields">
+      <input id="fName" type="text" required value="${escape(state.who.name)}" placeholder="${escape(t("name"))}" />
+      <textarea id="fAddress" required placeholder="${escape(t("address"))}">${escape(state.who.address)}</textarea>
+    </div>`;
+
+        els.sheetBody.querySelector("#fName").addEventListener("input", (e) => {
+          state.who.name = e.target.value;
+          store.write(LS.who, state.who);
+        });
+        els.sheetBody
+          .querySelector("#fAddress")
+          .addEventListener("input", (e) => {
+            state.who.address = e.target.value;
+            store.write(LS.who, state.who);
+          });
+      }
+
+      function setQty(id, qty) {
+        if (qty > 0) state.cart[id] = Math.min(qty, 99);
+        else delete state.cart[id];
+        store.write(LS.cart, state.cart);
+
+        // Keep the product's card in sync without re-rendering the whole grid.
+        document
+          .querySelectorAll(`.card[data-id="${CSS.escape(id)}"]`)
+          .forEach((el) => {
+            const q = state.cart[id] || 0;
+            el.classList.toggle("in-cart", q > 0);
+            el.querySelector(".qty-flag").textContent = q;
+          });
+
+        if (state.popId === id) renderPop();
+        renderCart();
+      }
+
+      function add(id) {
+        const p = PRODUCTS.get(id);
+        if (!p) return;
+        setQty(id, (state.cart[id] || 0) + 1);
+        toast(`${nameOf(p)} — ${t("added")}`);
+        els.fab.classList.remove("pulse");
+        void els.fab.offsetWidth;
+        els.fab.classList.add("pulse");
+      }
+
+      function toast(text) {
+        const el = document.createElement("div");
+        el.className = "toast";
+        el.textContent = text;
+        els.toasts.appendChild(el);
+        setTimeout(() => el.remove(), 2150);
+      }
+
+      /* ------------------------------------------------------------- SMS ordering */
+      function buildMessage() {
+        const lines = [t("msgHello"), ""];
+
+        Object.keys(state.cart).forEach((id) => {
+          const p = PRODUCTS.get(id);
+          if (!p) return;
+          const qty = state.cart[id];
+          lines.push(`${qty} x ${nameOf(p)} - ${money(p.price * qty)}`);
+        });
+
+        lines.push("", `${t("msgTotal")}: ${money(cartTotal())}`);
+        lines.push(`${t("msgName")}: ${state.who.name.trim()}`);
+        lines.push(`${t("msgAddress")}: ${state.who.address.trim()}`);
+
+        return lines.join("\n");
+      }
+
+      function sendOrder() {
+        if (!cartCount()) {
+          toast(t("cartEmptyWarn"));
+          return;
+        }
+
+        // Name and address are required so the order can actually be delivered.
+        if (!state.who.name.trim() || !state.who.address.trim()) {
+          toast(t("missingInfo"));
+          const target = !state.who.name.trim()
+            ? els.sheetBody.querySelector("#fName")
+            : els.sheetBody.querySelector("#fAddress");
+          target?.focus();
+          return;
+        }
+
+        const number = String(CONFIG.phone || "").replace(/[^\d+]/g, "");
+        if (number.replace(/\D/g, "").length < 8) {
+          toast(t("noPhone"));
+          return;
+        }
+
+        // iOS wants sms:<number>&body=…, Android and the rest want ?body=…
+        const sep = /iP(hone|ad|od)|Macintosh/i.test(navigator.userAgent)
+          ? "&"
+          : "?";
+        toast(t("opening"));
+        window.location.href = `sms:${number}${sep}body=${encodeURIComponent(buildMessage())}`;
+      }
+
+      /* -------------------------------------------------------------- cart sheet */
+      function openSheet(open) {
+        state.sheetOpen = open;
+        els.sheet.classList.toggle("open", open);
+        els.backdrop.classList.toggle("open", open);
+        lockScroll();
+      }
+
+      /* ------------------------------------------------------------------- theme */
+      function setTheme(theme) {
+        els.html.dataset.theme = theme;
+        els.iconSun.style.display = theme === "dark" ? "block" : "none";
+        els.iconMoon.style.display = theme === "dark" ? "none" : "block";
+        $('meta[name="theme-color"]').content =
+          theme === "dark" ? "#0a1018" : "#fafafa";
+        store.write(LS.theme, theme);
+      }
+
+      /* ------------------------------------------------------------- static text */
+      function renderStatic() {
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = t(el.dataset.i18n);
+        });
+        els.html.lang = state.lang;
+        document.title = `${CONFIG.brand} — ${t("tagline")}`;
+        $("#brandName").textContent = CONFIG.brand;
+        $("#footBrand").textContent = CONFIG.brand;
+
+        // Sayı zaten geldiyse yeni dilin binlik ayracıyla yaz.
+        // If the total already arrived, redraw it with the new locale.
+        if (els.visits.dataset.total)
+          els.visitsNum.textContent = Number(
+            els.visits.dataset.total,
+          ).toLocaleString(state.lang);
+
+        const lang = LANGS.find((l) => l.code === state.lang) || LANGS[0];
+        // Yuvarlak geçiş düğmesinin okunabilir adı da dille değişsin.
+        // The switch circle's accessible name follows the language too.
+        if (els.switchFab) {
+          const label = t(els.switchFab.dataset.i18nLabel);
+          els.switchFab.setAttribute("aria-label", label);
+          els.switchFab.title = label;
+        }
+        els.fab.setAttribute("aria-label", t("cart"));
+        els.fab.title = t("cart");
+
+        els.langFlag.textContent = lang.flag;
+        els.langCode.textContent = lang.code.toUpperCase();
+        els.langMenu.innerHTML = LANGS.map(
+          (l) => `
+    <button class="lang-item" type="button" role="menuitem" data-lang="${l.code}" aria-current="${l.code === state.lang}">
+      <span style="font-size:17px">${l.flag}</span><span>${escape(l.label)}</span>
+    </button>`,
+        ).join("");
+      }
+
+      function renderAll() {
+        renderStatic();
+        renderBanner();
+        renderCategories();
+        renderContent();
+        renderCart();
+        if (state.popId !== null) renderPop();
+        sweepImages();
+      }
+
+      /* ------------------------------------------------------------------ events */
+      els.catrail.addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if (chip) scrollToCategory(chip.dataset.cat);
+      });
+
+      els.content.addEventListener("click", (e) => {
+        const el = e.target.closest(".card");
+        if (!el) return;
+        const id = el.dataset.id;
+        const act = e.target.closest("[data-act]")?.dataset.act;
+
+        if (act === "inc") add(id);
+        else if (act === "dec") setQty(id, (state.cart[id] || 0) - 1);
+        else openProduct(id); // tapping the meal opens the big picture
+      });
+
+      els.sheetBody.addEventListener("click", (e) => {
+        const line = e.target.closest(".line");
+        const act = e.target.closest("[data-act]")?.dataset.act;
+        if (!line || !act) return;
+        setQty(
+          line.dataset.id,
+          (state.cart[line.dataset.id] || 0) + (act === "inc" ? 1 : -1),
+        );
+        renderCart();
+      });
+
+      els.langBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = els.langMenu.classList.toggle("open");
+        els.langBtn.setAttribute("aria-expanded", open);
+      });
+
+      els.langMenu.addEventListener("click", (e) => {
+        const item = e.target.closest("[data-lang]");
+        if (!item) return;
+        state.lang = item.dataset.lang;
+        store.write(LS.lang, state.lang);
+        els.langMenu.classList.remove("open");
+        els.langBtn.setAttribute("aria-expanded", "false");
+        const keep = state.active;
+        renderAll();
+        state.active = null;
+        setActive(keep);
+      });
+
+      document.addEventListener("click", () => {
+        els.langMenu.classList.remove("open");
+        els.langBtn.setAttribute("aria-expanded", "false");
+      });
+
+      els.themeBtn.addEventListener("click", () => {
+        setTheme(els.html.dataset.theme === "dark" ? "light" : "dark");
+      });
+
+      els.fab.addEventListener("click", () => openSheet(true));
+      els.topOrder.addEventListener("click", () => openSheet(true));
+      els.sheetClose.addEventListener("click", () => openSheet(false));
+      els.backdrop.addEventListener("click", () => openSheet(false));
+      els.orderBtn.addEventListener("click", sendOrder);
+
+      els.clearBtn.addEventListener("click", () => {
+        state.cart = {};
+        store.write(LS.cart, state.cart);
+        renderContent();
+        renderCart();
+        if (state.popId !== null) renderPop();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (state.popId !== null) closeProduct();
+        else if (state.sheetOpen) openSheet(false);
+        els.langMenu.classList.remove("open");
+      });
+
+      // Parallax and the category spy share one throttled scroll pass.
+      let ticking = false;
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            parallax(window.scrollY);
+            spy();
+            ticking = false;
+          });
+        },
+        { passive: true },
+      );
+
+      // Keep the sticky rail glued right under the header on any screen size.
+      const syncHeaderHeight = () => {
+        els.html.style.setProperty(
+          "--header-h",
+          `${els.header.offsetHeight}px`,
+        );
+      };
+      window.addEventListener("resize", () => {
+        syncHeaderHeight();
+        moveBanner(false);
+      });
+
+      // Autoplay is pointless while the tab is hidden, and browsers batch the timers.
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopBanner();
+        else restartBanner();
+      });
+
+      /* --------------------------------------------------- ziyaretçi / visitors */
+      // Backend yok, bu yüzden sayı ücretsiz bir sayaç servisinde tutuluyor.
+      // İlk servis cevap vermezse ikincisi denenir; ikisi de olmazsa satır
+      // gizli kalır — kırık bir "—" göstermektense hiç göstermemek daha iyi.
+      // No backend, so the total lives on a free counter service. If the first
+      // one is down the second is tried; if both fail the row stays hidden —
+      // better to show nothing than a broken "—".
+      //
+      // Not: bu sayı herkese açıktır ve isteyen artırabilir. Kabaca bir fikir
+      // verir, ciddi istatistik değildir.
+      // Note: the number is public and anyone can inflate it. It is a rough
+      // signal, not real analytics.
+      const COUNTER_APIS = [
+        {
+          hit: (n, k) => `https://abacus.jasoncameron.dev/hit/${n}/${k}`,
+          get: (n, k) => `https://abacus.jasoncameron.dev/get/${n}/${k}`,
+        },
+        {
+          hit: (n, k) => `https://api.counterapi.dev/v1/${n}/${k}/up`,
+          get: (n, k) => `https://api.counterapi.dev/v1/${n}/${k}/`,
+        },
+      ];
+
+      async function countVisit() {
+        const cfg = CONFIG.counter;
+        if (!cfg?.enabled || !cfg.name || !cfg.key) return;
+
+        // Aynı tarayıcıyı her yenilemede saymayalım.
+        // Do not re-count the same browser on every refresh.
+        const windowMs = Math.max(0, cfg.everyHours || 0) * 3600e3;
+        const last = Number(store.read(LS.counted, 0)) || 0;
+        const isNew = Date.now() - last >= windowMs;
+
+        const n = encodeURIComponent(cfg.name);
+        const k = encodeURIComponent(cfg.key);
+
+        for (const api of COUNTER_APIS) {
+          try {
+            const res = await fetch(isNew ? api.hit(n, k) : api.get(n, k), {
+              cache: "no-store",
+            });
+            if (!res.ok) continue;
+            const data = await res.json();
+            // Abacus "value", CounterAPI "count" döndürür / returns "count".
+            const total = Number(data.value ?? data.count);
+            if (!Number.isFinite(total)) continue;
+
+            if (isNew) store.write(LS.counted, Date.now());
+            els.visits.dataset.total = String(total);
+            els.visitsNum.textContent = total.toLocaleString(state.lang);
+            els.visits.hidden = false;
+            return;
+          } catch {
+            /* servis kapalı ya da ağ yok / service down or offline */
+          }
+        }
+      }
+
+      /* ------------------------------------------------------- resim yükleyicisi */
+      // Tek dinleyici tüm resimleri karşılar: kart, sepet, kategori, popup, banner.
+      // load/error olayları köpürmediği için yakalama (capture) evresindeyiz.
+      // One listener serves every picture — cards, cart, rail, popup, banner.
+      // load/error do not bubble, hence the capture phase.
+      const imgDone = (e) => {
+        const img = e.target;
+        if (img.tagName === "IMG") img.parentElement?.classList.add("ok");
+      };
+      document.addEventListener("load", imgDone, true);
+      document.addEventListener("error", imgDone, true);
+
+      // Önbellekten gelen resimler dinleyiciden önce bitmiş olabilir.
+      // Cached pictures may already be done before the listener ever runs.
+      const sweepImages = () => {
+        document.querySelectorAll("img").forEach((img) => {
+          if (img.complete && img.currentSrc)
+            img.parentElement?.classList.add("ok");
+        });
+      };
+
+      /* --------------------------------------------------------------------- init */
+      // Drop cart entries whose product no longer exists in MENU.
+      Object.keys(state.cart).forEach((id) => {
+        if (!PRODUCTS.has(id)) delete state.cart[id];
+      });
+
+      setTheme(store.read(LS.theme, null) || CONFIG.defaultTheme);
+      renderHero();
+      renderAll();
+      syncHeaderHeight();
+      parallax(window.scrollY);
+
+      // Menüyü bekletmesin diye ağ isteği en sona bırakıldı.
+      // Fired last so the network request never holds up the menu.
+      countVisit();
+
+      // Menü çizildi; açılış ekranını kaldır. / Menu is on screen, drop the boot screen.
+      requestAnimationFrame(() => {
+        els.html.classList.add("ready");
+        const boot = document.getElementById("boot");
+        boot?.addEventListener("transitionend", () => boot.remove(), {
+          once: true,
+        });
+        setTimeout(() => boot?.remove(), 600);
+      });
+    </script>
+  </body>
+</html>

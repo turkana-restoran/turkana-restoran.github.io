@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "email": "admin@restaurant.com",
+    "password": "$2a$12$v2j7qSTxYNpYcsiRQQiEaeKKcKyQB0m8djk8ecuHnAKOOR/CRqWiG",
+    "name": "Admin",
+    "role": "admin",
+    "createdAt": "2026-07-25T05:26:10.321Z",
+    "updatedAt": "2026-07-26T14:19:29.280Z"
+  }
+]

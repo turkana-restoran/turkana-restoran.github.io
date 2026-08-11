@@ -240,22 +240,46 @@
       </div>
     </footer>
 
+    <!-- Bölüm geçişi: soldaki yuvarlak diğer sayfaya götürür.
+         Section switch: the circle on the left hops to the other page. -->
+    <a
+      class="switch-fab"
+      id="switchFab"
+      href="shop.html"
+      data-i18n-label="goShop"
+    >
+      <span class="switch-ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 4.5h15l1.5 5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z" />
+          <path d="M5.4 11.7V20h13.2v-8.3" />
+          <path d="M9.8 20v-4.6h4.4V20" />
+        </svg>
+      </span>
+      <span class="switch-cap" data-i18n="goShop"></span>
+    </a>
+
+    <!-- Soldaki geçiş yuvarlağının sağdaki ikizi: aynı halka, altında aynı etiket.
+         Twin of the switch circle on the left: same ring, same caption below. -->
     <button class="fab" id="fab" type="button" aria-label="Cart">
-      <svg
-        width="25"
-        height="25"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="9" cy="20" r="1.6" />
-        <circle cx="18" cy="20" r="1.6" />
-        <path d="M2 3h2.2l2.6 12.2h11.4l2.2-8.4H6" />
-      </svg>
-      <span class="fab-badge" id="fabBadge">0</span>
+      <span class="fab-ring">
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="20" r="1.6" />
+          <circle cx="18" cy="20" r="1.6" />
+          <path d="M2 3h2.2l2.6 12.2h11.4l2.2-8.4H6" />
+        </svg>
+        <span class="fab-badge" id="fabBadge">0</span>
+      </span>
+      <span class="fab-cap" data-i18n="cartShort"></span>
     </button>
 
     <div class="backdrop" id="backdrop"></div>
@@ -802,7 +826,11 @@
         aspect-ratio: 16 / 9;
         overflow: hidden;
         user-select: none;
-        background: linear-gradient(135deg, var(--accent), #ec4899);
+        /* Resim inerken görünen renk: her banner için siyah. Resim gelince
+           üstünde yumuşakça belirir, renk sıçraması olmaz.
+           Shown while the picture downloads — black for every banner. The image
+           then fades in on top of it, so there is no colour jump. */
+        background: #000;
       }
       @media (min-width: 768px) {
         .slide {
@@ -814,6 +842,12 @@
         height: 100%;
         object-fit: cover;
         -webkit-user-drag: none;
+        /* Siyahın üstünde yumuşakça açılır / eases open over the black. */
+        opacity: 0;
+        transition: opacity 0.45s ease;
+      }
+      .slide.ok img {
+        opacity: 1;
       }
       .slide .veil {
         position: absolute;
@@ -1119,7 +1153,7 @@
         inset-inline-end: 8px;
         width: 26px;
         height: 26px;
-        border-radius: 8px;
+        border-radius: 999px;
         background: rgba(0, 0, 0, 0.38);
         backdrop-filter: blur(6px);
         color: #fff;
@@ -1188,34 +1222,48 @@
         white-space: nowrap;
       }
 
+      /* Soldaki geçiş yuvarlağı ile aynı dil: çerçeveli yuvarlak, dokununca
+         dolar. / Same language as the switch circle on the left: an outlined
+         ring that fills in on hover and press. */
       .add {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        color: #fff;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 999px;
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
         display: grid;
         place-items: center;
-        box-shadow: 0 4px 12px var(--accent-soft);
+        box-shadow: var(--shadow);
         transition:
-          transform 0.16s,
-          filter 0.16s;
+          background 0.2s ease,
+          color 0.2s ease,
+          transform 0.16s ease;
       }
       .add:hover {
-        filter: brightness(1.08);
+        background: var(--accent);
+        color: #fff;
       }
       .add:active {
+        background: var(--accent);
+        color: #fff;
         transform: scale(0.9);
       }
+      .add:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
 
+      /* Sepetteyken "+" düğmesinin yerini alır, o yüzden o da yuvarlak.
+         Takes the "+" button's place once in the cart, so it is round too. */
       .stepper {
         display: none;
         align-items: center;
         gap: 2px;
-        background: var(--bg-soft);
-        border: 1px solid var(--border);
-        border-radius: 10px;
+        background: var(--card);
+        border: 2px solid var(--accent);
+        border-radius: 999px;
         padding: 2px;
       }
       .card.in-cart .stepper {
@@ -1227,17 +1275,17 @@
       .stepper button {
         width: 26px;
         height: 26px;
-        border-radius: 8px;
+        border-radius: 999px;
         display: grid;
         place-items: center;
-        color: var(--muted);
+        color: var(--accent);
         transition:
           background 0.15s,
           color 0.15s;
       }
       .stepper button:hover {
-        background: var(--card);
-        color: var(--accent);
+        background: var(--accent);
+        color: #fff;
       }
       .stepper .q {
         min-width: 20px;
@@ -1257,30 +1305,71 @@
       }
 
       /* ------------------------------------------------------------------- fab */
+      /* Soldaki geçiş yuvarlağı ile aynı: çerçeveli halka + altında etiket.
+         Same as the switch circle on the left: outlined ring + caption below. */
       .fab {
         position: fixed;
         z-index: 45;
         inset-inline-end: 18px;
         bottom: calc(18px + env(safe-area-inset-bottom, 0px));
         width: 62px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 0;
+        color: var(--fg);
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.2s ease;
+      }
+      .fab-ring {
+        position: relative; /* rozet buna göre durur / the badge anchors here */
+        width: 62px;
         height: 62px;
         border-radius: 999px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        color: #fff;
         display: grid;
         place-items: center;
-        box-shadow: 0 14px 34px rgba(249, 115, 22, 0.42);
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        box-shadow: var(--shadow-lg);
         transition:
-          transform 0.2s,
-          box-shadow 0.2s;
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .fab-cap {
+        max-width: 74px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
       }
       .fab:hover {
-        transform: scale(1.06);
+        transform: translateY(-2px);
+      }
+      .fab:hover .fab-ring {
+        background: var(--accent);
+        color: #fff;
       }
       .fab:active {
         transform: scale(0.94);
       }
-      .fab.pulse {
+      .fab:focus-visible .fab-ring {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+      /* Sepete eklendi zıplaması artık sadece halkada — etiket sabit kalsın.
+         The "added" bounce now runs on the ring alone, so the caption stays put. */
+      .fab.pulse .fab-ring {
         animation: pop 0.38s ease;
       }
       @keyframes pop {
@@ -1297,8 +1386,8 @@
 
       .fab-badge {
         position: absolute;
-        top: -2px;
-        inset-inline-end: -2px;
+        top: -6px;
+        inset-inline-end: -6px;
         min-width: 24px;
         height: 24px;
         padding: 0 6px;
@@ -1313,6 +1402,103 @@
       }
       .fab-badge.on {
         display: grid;
+      }
+
+      /* --------------------------------------------- bölüm geçişi / section switch */
+      /* Sepet düğmesinin sol ikizi: aynı boy, ama dolu değil çerçeveli — böylece
+         "ekle" değil "git" olduğu bakışta anlaşılır.
+         The cart button's mirror twin on the left: same size, outlined instead of
+         filled, so it reads as "go there", never as "add to cart". */
+      .switch-fab {
+        position: fixed;
+        z-index: 45;
+        inset-inline-start: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        width: 62px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--fg);
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.2s ease;
+      }
+      .switch-ring {
+        width: 62px;
+        height: 62px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--card);
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .switch-ring svg {
+        width: 26px;
+        height: 26px;
+      }
+      .switch-cap {
+        max-width: 74px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+      .switch-fab:hover {
+        transform: translateY(-2px);
+      }
+      .switch-fab:hover .switch-ring {
+        background: var(--accent);
+        color: #fff;
+      }
+      .switch-fab:active {
+        transform: scale(0.94);
+      }
+      .switch-fab:focus-visible .switch-ring {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+      /* Dar telefonlarda sepet ile çakışmasın diye biraz küçülür.
+         Shrinks on narrow phones so it never crowds the cart button. */
+      @media (max-width: 360px) {
+        .switch-fab,
+        .switch-ring,
+        .fab,
+        .fab-ring {
+          width: 54px;
+        }
+        .switch-ring,
+        .fab-ring {
+          height: 54px;
+        }
+        .switch-ring svg,
+        .fab-ring svg {
+          width: 23px;
+          height: 23px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .switch-fab,
+        .switch-ring,
+        .fab,
+        .fab-ring {
+          transition: none;
+        }
       }
 
       /* ----------------------------------------------------------- cart sheet */
@@ -2029,6 +2215,9 @@
           msgName: "Ad",
           msgAddress: "Adres",
           visitors: "ziyaretçi",
+          cartShort: "Sepet",
+          goShop: "Market",
+          goMeal: "Yemek",
         },
         en: {
           tagline: "Order online",
@@ -2055,6 +2244,9 @@
           msgName: "Name",
           msgAddress: "Address",
           visitors: "visitors",
+          cartShort: "Cart",
+          goShop: "Shop",
+          goMeal: "Meal",
         },
         ru: {
           tagline: "Заказ онлайн",
@@ -2081,6 +2273,9 @@
           msgName: "Имя",
           msgAddress: "Адрес",
           visitors: "посетителей",
+          cartShort: "Корзина",
+          goShop: "Магазин",
+          goMeal: "Еда",
         },
         tk: {
           tagline: "Onlaýn sargyt",
@@ -2107,6 +2302,9 @@
           msgName: "Ady",
           msgAddress: "Salgy",
           visitors: "myhman",
+          cartShort: "Sebet",
+          goShop: "Dükan",
+          goMeal: "Nahar",
         },
       };
 
@@ -4468,6 +4666,7 @@
         popDec: $("#popDec"),
         popInc: $("#popInc"),
         popCta: $("#popCta"),
+        switchFab: $("#switchFab"),
         toasts: $("#toasts"),
       };
 
@@ -5103,6 +5302,16 @@
           ).toLocaleString(state.lang);
 
         const lang = LANGS.find((l) => l.code === state.lang) || LANGS[0];
+        // Yuvarlak geçiş düğmesinin okunabilir adı da dille değişsin.
+        // The switch circle's accessible name follows the language too.
+        if (els.switchFab) {
+          const label = t(els.switchFab.dataset.i18nLabel);
+          els.switchFab.setAttribute("aria-label", label);
+          els.switchFab.title = label;
+        }
+        els.fab.setAttribute("aria-label", t("cart"));
+        els.fab.title = t("cart");
+
         els.langFlag.textContent = lang.flag;
         els.langCode.textContent = lang.code.toUpperCase();
         els.langMenu.innerHTML = LANGS.map(

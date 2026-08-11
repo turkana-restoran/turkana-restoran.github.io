@@ -1,0 +1,62 @@
+[
+  {
+    "id": 166,
+    "name": {
+      "en": "Ucurym menu",
+      "tr": "Uçurym menü",
+      "tk": "Uçurym menýu",
+      "ru": "Учурым меню"
+    },
+    "description": {
+      "en": "Special graduation combo with Classic Burger, French Fries, and Coca-Cola",
+      "tr": "Klasik Burger, Patates Kızartması ve Coca-Cola ile mezuniyet menüsü",
+      "tk": "Klassik burger, kartoşka fri we Koka-kola bilen uçurym menýusy",
+      "ru": "Выпускное меню с Классическим бургером, картофелем фри и Кока-Колой"
+    },
+    "price": "24.99",
+    "image": "/meal images/burger/burger3.webp",
+    "available": true,
+    "createdAt": "2026-07-26T14:19:29.324Z",
+    "updatedAt": "2026-07-26T14:19:29.324Z"
+  },
+  {
+    "id": 167,
+    "name": {
+      "en": "Oraza menu",
+      "tr": "Oraza menü",
+      "tk": "Oraza menýu",
+      "ru": "Ораза меню"
+    },
+    "description": {
+      "en": "Special Ramadan fasting combo with Lentil Soup, Adana Kebab, Baklava, and Still Water",
+      "tr": "Mercimek Çorbası, Adana Kebap, Baklava ve Su ile iftar menüsü",
+      "tk": "Merjimek çorbasy, Adana kebap, Baklawa we Suw bilen oraza menýusy",
+      "ru": "Ифтар-меню с чечевичным супом, Адана кебабом, баклавой и водой"
+    },
+    "price": "39.99",
+    "image": "/meal images/sagaetti/oraza menu.webp",
+    "available": true,
+    "createdAt": "2026-07-26T14:19:29.325Z",
+    "updatedAt": "2026-07-26T14:19:29.325Z"
+  },
+  {
+    "id": 168,
+    "name": {
+      "en": "Arzan menu",
+      "tr": "Arzan menü",
+      "tk": "Arzan menýu",
+      "ru": "Дешевое меню"
+    },
+    "description": {
+      "en": "Budget saver combo with Spaghetti Bolognese, Garlic Bread, and Black Tea",
+      "tr": "Spagetti Bolonez, Sarımsaklı Ekmek ve Siyah Çay ile ekonomik menü",
+      "tk": "Spagetti Bolonez, Sarymsak çöregi we Gara çaý bilen arzan menýu",
+      "ru": "Бюджетное меню со спагетти болоньезе, чесночным хлебом и черным чаем"
+    },
+    "price": "19.99",
+    "image": "/meal images/sagaetti/balonez sapagetti.webp",
+    "available": true,
+    "createdAt": "2026-07-26T14:19:29.327Z",
+    "updatedAt": "2026-07-26T14:19:29.327Z"
+  }
+]

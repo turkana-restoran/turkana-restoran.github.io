@@ -1,0 +1,15 @@
+[
+  {
+    "id": 92,
+    "tableId": 12,
+    "status": "accepted",
+    "total": "90",
+    "notes": null,
+    "source": "qr",
+    "sessionId": "mtSG8RZ6",
+    "acceptedAt": "2026-08-10T04:02:53.911Z",
+    "billClosedAt": null,
+    "createdAt": "2026-08-10T04:02:49.666Z",
+    "updatedAt": "2026-08-10T04:02:53.912Z"
+  }
+]

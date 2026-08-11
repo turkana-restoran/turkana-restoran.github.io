@@ -1,0 +1,302 @@
+[
+  {
+    "id": 7,
+    "number": 1,
+    "tableCode": "PP6TD9N9",
+    "name": "Stol 1",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:07.824Z",
+    "updatedAt": "2026-08-10T10:54:07.444Z"
+  },
+  {
+    "id": 8,
+    "number": 2,
+    "tableCode": "H74FEX9E",
+    "name": "Stol 2",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:11.922Z",
+    "updatedAt": "2026-08-07T18:03:08.897Z"
+  },
+  {
+    "id": 9,
+    "number": 3,
+    "tableCode": "T9YY6X9D",
+    "name": "Stol 3",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:15.829Z",
+    "updatedAt": "2026-07-26T19:38:15.829Z"
+  },
+  {
+    "id": 10,
+    "number": 4,
+    "tableCode": "EB8XU93A",
+    "name": "Stol 4",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:19.950Z",
+    "updatedAt": "2026-07-26T19:38:19.950Z"
+  },
+  {
+    "id": 11,
+    "number": 5,
+    "tableCode": "9KKWQ9KA",
+    "name": "Stol 5",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:24.886Z",
+    "updatedAt": "2026-07-26T19:38:24.886Z"
+  },
+  {
+    "id": 12,
+    "number": 6,
+    "tableCode": "R9M8EWQP",
+    "name": "Stol 6",
+    "tabletPin": null,
+    "status": "occupied",
+    "createdAt": "2026-07-26T19:38:29.315Z",
+    "updatedAt": "2026-08-10T04:02:49.669Z"
+  },
+  {
+    "id": 13,
+    "number": 7,
+    "tableCode": "FE7Z6KWR",
+    "name": "Stol 7",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:33.664Z",
+    "updatedAt": "2026-07-26T19:38:33.664Z"
+  },
+  {
+    "id": 14,
+    "number": 8,
+    "tableCode": "CNMHJSJ3",
+    "name": "Stol 8",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:38.510Z",
+    "updatedAt": "2026-07-26T19:38:38.510Z"
+  },
+  {
+    "id": 15,
+    "number": 9,
+    "tableCode": "WYM9KGMR",
+    "name": "Stol 9",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:38:49.672Z",
+    "updatedAt": "2026-07-26T19:38:49.672Z"
+  },
+  {
+    "id": 16,
+    "number": 10,
+    "tableCode": "JMHVLJ44",
+    "name": "Stol 10",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:02.076Z",
+    "updatedAt": "2026-07-26T19:39:02.076Z"
+  },
+  {
+    "id": 17,
+    "number": 11,
+    "tableCode": "3BR63RRY",
+    "name": "Stol 11",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:09.806Z",
+    "updatedAt": "2026-07-26T19:39:09.806Z"
+  },
+  {
+    "id": 18,
+    "number": 12,
+    "tableCode": "UM2C6JBT",
+    "name": "Stol 12",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:15.838Z",
+    "updatedAt": "2026-07-26T19:39:15.838Z"
+  },
+  {
+    "id": 19,
+    "number": 13,
+    "tableCode": "HPHHJM9B",
+    "name": "Stol 13",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:23.040Z",
+    "updatedAt": "2026-07-26T19:39:23.040Z"
+  },
+  {
+    "id": 20,
+    "number": 14,
+    "tableCode": "DQNDNALA",
+    "name": "Stol 14",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:28.106Z",
+    "updatedAt": "2026-07-26T19:39:28.106Z"
+  },
+  {
+    "id": 21,
+    "number": 15,
+    "tableCode": "835CN9S8",
+    "name": "Stol 15",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:31.861Z",
+    "updatedAt": "2026-07-26T19:39:31.861Z"
+  },
+  {
+    "id": 22,
+    "number": 16,
+    "tableCode": "8C87GFN9",
+    "name": "Stol 16",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:35.951Z",
+    "updatedAt": "2026-07-26T19:39:35.951Z"
+  },
+  {
+    "id": 23,
+    "number": 17,
+    "tableCode": "VRCMKFDN",
+    "name": "Stol 17",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:40.095Z",
+    "updatedAt": "2026-07-26T19:39:40.095Z"
+  },
+  {
+    "id": 24,
+    "number": 18,
+    "tableCode": "4AWR5BT8",
+    "name": "Stol 18",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:44.451Z",
+    "updatedAt": "2026-07-26T19:39:44.451Z"
+  },
+  {
+    "id": 25,
+    "number": 19,
+    "tableCode": "UH4UMPW9",
+    "name": "Stol 19",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:49.295Z",
+    "updatedAt": "2026-07-26T19:39:49.295Z"
+  },
+  {
+    "id": 26,
+    "number": 20,
+    "tableCode": "GL7M48MY",
+    "name": "Stol 20",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:53.266Z",
+    "updatedAt": "2026-07-26T19:39:53.266Z"
+  },
+  {
+    "id": 27,
+    "number": 21,
+    "tableCode": "LFUN8YWA",
+    "name": "Stol 21",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:39:59.295Z",
+    "updatedAt": "2026-07-26T19:39:59.295Z"
+  },
+  {
+    "id": 28,
+    "number": 22,
+    "tableCode": "7J6DKWGY",
+    "name": "Stol 22",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:04.754Z",
+    "updatedAt": "2026-07-26T19:40:04.754Z"
+  },
+  {
+    "id": 29,
+    "number": 23,
+    "tableCode": "86UCQN3Z",
+    "name": "Stol 23",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:11.055Z",
+    "updatedAt": "2026-07-26T19:40:11.055Z"
+  },
+  {
+    "id": 30,
+    "number": 24,
+    "tableCode": "4QLGJ6YR",
+    "name": "Stol 24",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:15.110Z",
+    "updatedAt": "2026-07-26T19:40:15.110Z"
+  },
+  {
+    "id": 31,
+    "number": 25,
+    "tableCode": "AD5HD3XB",
+    "name": "Stol 25",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:19.512Z",
+    "updatedAt": "2026-07-26T19:40:19.512Z"
+  },
+  {
+    "id": 32,
+    "number": 26,
+    "tableCode": "MK4V3E2A",
+    "name": "Stol 26",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:23.616Z",
+    "updatedAt": "2026-07-26T19:40:23.616Z"
+  },
+  {
+    "id": 33,
+    "number": 27,
+    "tableCode": "42Z4HMES",
+    "name": "Stol 27",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:32.331Z",
+    "updatedAt": "2026-07-26T19:40:32.331Z"
+  },
+  {
+    "id": 34,
+    "number": 28,
+    "tableCode": "EST3YKCT",
+    "name": "Stol 28",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:39.370Z",
+    "updatedAt": "2026-07-26T19:40:39.370Z"
+  },
+  {
+    "id": 35,
+    "number": 29,
+    "tableCode": "BZJEQR4U",
+    "name": "Stol 29",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:43.725Z",
+    "updatedAt": "2026-07-26T19:40:43.725Z"
+  },
+  {
+    "id": 36,
+    "number": 30,
+    "tableCode": "W9XQ8QEL",
+    "name": "Stol 30",
+    "tabletPin": null,
+    "status": "available",
+    "createdAt": "2026-07-26T19:40:48.576Z",
+    "updatedAt": "2026-07-26T19:40:48.576Z"
+  }
+]

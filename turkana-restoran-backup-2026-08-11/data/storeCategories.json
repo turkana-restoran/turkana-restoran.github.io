@@ -1,0 +1,274 @@
+[
+  {
+    "id": 2162,
+    "name": {
+      "en": "Azyk",
+      "tr": "Azyk",
+      "tk": "Azyk",
+      "ru": "Azyk"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 4,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.353Z"
+  },
+  {
+    "id": 2163,
+    "name": {
+      "en": "Keksler we kokeler",
+      "tr": "Keksler we kokeler",
+      "tk": "Keksler we kokeler",
+      "ru": "Keksler we kokeler"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 5,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.353Z"
+  },
+  {
+    "id": 2164,
+    "name": {
+      "en": "Cigitler",
+      "tr": "Cigitler",
+      "tk": "Cigitler",
+      "ru": "Cigitler"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 6,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.356Z"
+  },
+  {
+    "id": 2165,
+    "name": {
+      "en": "Himiya",
+      "tr": "Himiya",
+      "tk": "Himiya",
+      "ru": "Himiya"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 2,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.352Z"
+  },
+  {
+    "id": 2166,
+    "name": {
+      "en": "Chocolate",
+      "tr": "Cikolatalar",
+      "tk": "Sokolad we suyjiler",
+      "ru": "Sokolad we suyjiler"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 7,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.356Z"
+  },
+  {
+    "id": 2167,
+    "name": {
+      "en": "Cipsiler",
+      "tr": "Cipsiler",
+      "tk": "Cipsiler",
+      "ru": "Cipsiler"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 8,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.356Z"
+  },
+  {
+    "id": 2168,
+    "name": {
+      "en": "Marmelat",
+      "tr": "Marmelat",
+      "tk": "Marmelat",
+      "ru": "Marmelat"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 9,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.357Z"
+  },
+  {
+    "id": 2169,
+    "name": {
+      "en": "Kireski",
+      "tr": "Kireski",
+      "tk": "Kireski",
+      "ru": "Kireski"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 10,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.358Z"
+  },
+  {
+    "id": 2170,
+    "name": {
+      "en": "Shortik",
+      "tr": "Shortik",
+      "tk": "Shortik",
+      "ru": "Shortik"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 11,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-03T16:06:26.342Z",
+    "updatedAt": "2026-08-05T01:31:01.360Z"
+  },
+  {
+    "id": 2171,
+    "name": {
+      "en": "Kupalnik",
+      "tr": "Kupalnik",
+      "tk": "Kupalnik",
+      "ru": "Kupalnik"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 3,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-04T23:32:44.879Z",
+    "updatedAt": "2026-08-05T01:31:01.352Z"
+  },
+  {
+    "id": 2172,
+    "name": {
+      "en": "Harytlar",
+      "tr": "Harytlar",
+      "tk": "Harytlar",
+      "ru": "Harytlar"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 12,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-04T23:45:07.633Z",
+    "updatedAt": "2026-08-05T01:31:01.361Z"
+  },
+  {
+    "id": 2173,
+    "name": {
+      "en": "Caylar",
+      "tr": "Caylar",
+      "tk": "Caylar",
+      "ru": "Caylar"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 13,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-05T00:06:41.140Z",
+    "updatedAt": "2026-08-05T01:31:01.365Z"
+  },
+  {
+    "id": 2174,
+    "name": {
+      "en": "Sakgyc",
+      "tr": "Sakgyc",
+      "tk": "Sakgyc",
+      "ru": "Sakgyc"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 14,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-05T01:14:12.867Z",
+    "updatedAt": "2026-08-05T01:31:01.367Z"
+  },
+  {
+    "id": 2175,
+    "name": {
+      "en": "Molped",
+      "tr": "Molped",
+      "tk": "Molped",
+      "ru": "Molped"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 0,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-05T01:19:15.759Z",
+    "updatedAt": "2026-08-05T01:31:01.350Z"
+  },
+  {
+    "id": 2176,
+    "name": {
+      "en": "Zlet",
+      "tr": "Zlet",
+      "tk": "Zlet",
+      "ru": "Zlet"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 1,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-05T01:25:19.320Z",
+    "updatedAt": "2026-08-05T01:31:01.351Z"
+  },
+  {
+    "id": 2177,
+    "name": {
+      "en": "Oyunjaklar",
+      "tr": "Oyunjaklar",
+      "tk": "Oyunjaklar",
+      "ru": "Oyunjaklar"
+    },
+    "image": null,
+    "icon": null,
+    "kind": "store",
+    "sortOrder": 15,
+    "discountPercent": null,
+    "discountUntil": null,
+    "createdAt": "2026-08-05T01:27:43.817Z",
+    "updatedAt": "2026-08-05T01:31:01.368Z"
+  }
+]
