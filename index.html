@@ -228,6 +228,18 @@
 
     <main id="content"></main>
 
+    <!-- Sayfa altı. Ziyaretçi sayacı sunucusuz çalışır: sayı ücretsiz bir
+         sayaç servisinden gelir, gelmezse satır kendini gizler.
+         Page footer. The visit counter needs no backend: the number comes from
+         a free counter service, and the row hides itself if that call fails. -->
+    <footer class="sitefoot">
+      <div class="foot-brand" id="footBrand">Turkana Restoran</div>
+      <div class="visits" id="visits" hidden>
+        <span class="visits-eye" aria-hidden="true">👁</span>
+        <span class="visits-num" id="visitsNum">—</span>
+      </div>
+    </footer>
+
     <button class="fab" id="fab" type="button" aria-label="Cart">
       <svg
         width="25"
@@ -1832,6 +1844,55 @@
         }
       }
 
+      /* -------------------------------------------------- sayfa altı / footer */
+      /* Alt boşluk sepet düğmesini (62px + 18px) temizler.
+         The bottom padding clears the floating cart button. */
+      .sitefoot {
+        max-width: 1180px;
+        margin: 40px auto 0;
+        padding: 22px 14px calc(104px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--border);
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        text-align: center;
+      }
+      .foot-brand {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .visits {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 13px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        font-size: 12.5px;
+        color: var(--muted);
+        animation: visitsIn 0.4s ease;
+      }
+      .visits[hidden] {
+        display: none;
+      }
+      .visits-eye {
+        font-size: 13px;
+        opacity: 0.75;
+      }
+      .visits-num {
+        font-weight: 700;
+        color: var(--fg);
+        font-variant-numeric: tabular-nums;
+      }
+      @keyframes visitsIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         * {
           animation-duration: 0.01ms !important;
@@ -1864,6 +1925,20 @@
         heroRight: "uploads/hero-right.png",
 
         bannerAutoplayMs: 3500, // banner kaç ms'de bir kayar / autoplay delay
+
+        // Ziyaretçi sayacı / visit counter.
+        // Sunucu yok: sayı ücretsiz bir sayaç servisinde tutulur. "name" bu
+        // siteye özel olmalı — aynı adı başkası kullanırsa sayılar karışır.
+        // Aynı tarayıcı 24 saatte bir kez sayılır, yani "kaç kişi açtı".
+        // No server: the number lives on a free counter service. "name" must be
+        // unique to this site — a shared name would mix your count with theirs.
+        // One browser counts once per 24h, so it reads as "how many people".
+        counter: {
+          enabled: true,
+          name: "turkana-restoran-github-io", // benzersiz olsun / keep unique
+          key: "visits",
+          everyHours: 24, // 0 → her açılışı say / count every page load
+        },
       };
 
       /* ==========================================================================
@@ -1953,6 +2028,7 @@
           msgTotal: "Toplam",
           msgName: "Ad",
           msgAddress: "Adres",
+          visitors: "ziyaretçi",
         },
         en: {
           tagline: "Order online",
@@ -1978,6 +2054,7 @@
           msgTotal: "Total",
           msgName: "Name",
           msgAddress: "Address",
+          visitors: "visitors",
         },
         ru: {
           tagline: "Заказ онлайн",
@@ -2003,6 +2080,7 @@
           msgTotal: "Итого",
           msgName: "Имя",
           msgAddress: "Адрес",
+          visitors: "посетителей",
         },
         tk: {
           tagline: "Onlaýn sargyt",
@@ -2028,6 +2106,7 @@
           msgTotal: "Jemi",
           msgName: "Ady",
           msgAddress: "Salgy",
+          visitors: "myhman",
         },
       };
 
@@ -4336,6 +4415,7 @@
         lang: "sm.market.lang",
         theme: "sm.market.theme",
         who: "sm.market.who",
+        counted: "sm.market.counted", // son sayım zamanı / last counted at (ms)
       };
 
       const $ = (sel) => document.querySelector(sel);
@@ -4362,6 +4442,8 @@
         iconMoon: $("#iconMoon"),
         fab: $("#fab"),
         fabBadge: $("#fabBadge"),
+        visits: $("#visits"),
+        visitsNum: $("#visitsNum"),
         topOrder: $("#topOrder"),
         backdrop: $("#backdrop"),
         sheet: $("#sheet"),
@@ -5011,6 +5093,14 @@
         els.html.lang = state.lang;
         document.title = `${CONFIG.brand} — ${t("tagline")}`;
         $("#brandName").textContent = CONFIG.brand;
+        $("#footBrand").textContent = CONFIG.brand;
+
+        // Sayı zaten geldiyse yeni dilin binlik ayracıyla yaz.
+        // If the total already arrived, redraw it with the new locale.
+        if (els.visits.dataset.total)
+          els.visitsNum.textContent = Number(
+            els.visits.dataset.total,
+          ).toLocaleString(state.lang);
 
         const lang = LANGS.find((l) => l.code === state.lang) || LANGS[0];
         els.langFlag.textContent = lang.flag;
@@ -5144,6 +5234,64 @@
         else restartBanner();
       });
 
+      /* --------------------------------------------------- ziyaretçi / visitors */
+      // Backend yok, bu yüzden sayı ücretsiz bir sayaç servisinde tutuluyor.
+      // İlk servis cevap vermezse ikincisi denenir; ikisi de olmazsa satır
+      // gizli kalır — kırık bir "—" göstermektense hiç göstermemek daha iyi.
+      // No backend, so the total lives on a free counter service. If the first
+      // one is down the second is tried; if both fail the row stays hidden —
+      // better to show nothing than a broken "—".
+      //
+      // Not: bu sayı herkese açıktır ve isteyen artırabilir. Kabaca bir fikir
+      // verir, ciddi istatistik değildir.
+      // Note: the number is public and anyone can inflate it. It is a rough
+      // signal, not real analytics.
+      const COUNTER_APIS = [
+        {
+          hit: (n, k) => `https://abacus.jasoncameron.dev/hit/${n}/${k}`,
+          get: (n, k) => `https://abacus.jasoncameron.dev/get/${n}/${k}`,
+        },
+        {
+          hit: (n, k) => `https://api.counterapi.dev/v1/${n}/${k}/up`,
+          get: (n, k) => `https://api.counterapi.dev/v1/${n}/${k}/`,
+        },
+      ];
+
+      async function countVisit() {
+        const cfg = CONFIG.counter;
+        if (!cfg?.enabled || !cfg.name || !cfg.key) return;
+
+        // Aynı tarayıcıyı her yenilemede saymayalım.
+        // Do not re-count the same browser on every refresh.
+        const windowMs = Math.max(0, cfg.everyHours || 0) * 3600e3;
+        const last = Number(store.read(LS.counted, 0)) || 0;
+        const isNew = Date.now() - last >= windowMs;
+
+        const n = encodeURIComponent(cfg.name);
+        const k = encodeURIComponent(cfg.key);
+
+        for (const api of COUNTER_APIS) {
+          try {
+            const res = await fetch(isNew ? api.hit(n, k) : api.get(n, k), {
+              cache: "no-store",
+            });
+            if (!res.ok) continue;
+            const data = await res.json();
+            // Abacus "value", CounterAPI "count" döndürür / returns "count".
+            const total = Number(data.value ?? data.count);
+            if (!Number.isFinite(total)) continue;
+
+            if (isNew) store.write(LS.counted, Date.now());
+            els.visits.dataset.total = String(total);
+            els.visitsNum.textContent = total.toLocaleString(state.lang);
+            els.visits.hidden = false;
+            return;
+          } catch {
+            /* servis kapalı ya da ağ yok / service down or offline */
+          }
+        }
+      }
+
       /* ------------------------------------------------------- resim yükleyicisi */
       // Tek dinleyici tüm resimleri karşılar: kart, sepet, kategori, popup, banner.
       // load/error olayları köpürmediği için yakalama (capture) evresindeyiz.
@@ -5176,6 +5324,10 @@
       renderAll();
       syncHeaderHeight();
       parallax(window.scrollY);
+
+      // Menüyü bekletmesin diye ağ isteği en sona bırakıldı.
+      // Fired last so the network request never holds up the menu.
+      countVisit();
 
       // Menü çizildi; açılış ekranını kaldır. / Menu is on screen, drop the boot screen.
       requestAnimationFrame(() => {
