@@ -13,7 +13,7 @@
   2) ÜRÜN EKLEMEK      →  MENU listesinde her ürün TEK bir kayıt (tek div/kart):
      ADD A PRODUCT     →  one entry per product inside MENU:
 
-        { id: "p1", name: { tr:"Adı", en:"Name", ru:"Имя", tk:"Ady" },
+        { id: "p1", name: { ru:"Имя", tk:"Ady" },
           price: 12.5, image: "burger-burger1.webp" }
 
   3) RESİMLER          →  "uploads/" klasörüne koy, sadece dosya adını yaz.
@@ -26,7 +26,7 @@
   hazırdır. PDF yoktur.
   ============================================================================
 -->
-<html lang="tr" data-theme="dark">
+<html lang="ru" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -136,7 +136,10 @@
       }
     </style>
   </head>
-  <body>
+  <body style="position: relative;">
+    <div style="position: absolute; width: 50%; background-color: #54bb1d; height: 100%; z-index: 100;">
+dostawka
+    </div>
     <div id="boot" role="status" aria-live="polite">
       <div class="mark" aria-hidden="true">🛒</div>
       <div class="bar" aria-hidden="true"></div>
@@ -161,8 +164,8 @@
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <span class="flag" id="langFlag">🇹🇷</span>
-            <span class="code" id="langCode">TR</span>
+            <span class="flag" id="langFlag">🇷🇺</span>
+            <span class="code" id="langCode">RU</span>
           </button>
           <div class="lang-menu" id="langMenu" role="menu"></div>
         </div>
@@ -2102,7 +2105,7 @@
         brand: "Turkana-Restoran", // üst barda görünen isim / name in the header
         currency: "m", // para birimi / currency symbol
         currencyAfter: true, // simge fiyatın sonunda mı? / symbol after the price
-        defaultLanguage: "ru", // tr | en | ru | tk
+        defaultLanguage: "ru", // ru | tk
         defaultTheme: "light", // dark | light
 
         // Parallax alanı / parallax hero artwork
@@ -2135,14 +2138,10 @@
         {
           image: "pizza.webp",
           title: {
-            tr: "Tagamly pizzalar bizde",
-            en: "Tagamly pizzalar bizde",
             ru: "Tagamly pizzalar bizde",
             tk: "Tagamly pizzalar bizde",
           },
           text: {
-            tr: "Turkana restoran sizin hyzmatynyzda!",
-            en: "Turkana restoran sizin hyzmatynyzda!",
             ru: "Turkana restoran sizin hyzmatynyzda!",
             tk: "Turkana restoran sizin hyzmatynyzda!",
           },
@@ -2150,14 +2149,10 @@
         {
           image: "samekan.webp",
           title: {
-            tr: "Bizin salgymyz",
-            en: "Bizin salgymyz",
             ru: "Bizin salgymyz",
             tk: "Bizin salgymyz",
           },
           text: {
-            tr: "Samekan otel 1 nji gat",
-            en: "Samekan otel 1 nji gat",
             ru: "Samekan otel 1 nji gat",
             tk: "Samekan otel 1 nji gat",
           },
@@ -2165,14 +2160,10 @@
         {
           image: "turkana.webp",
           title: {
-            tr: "+99362998301",
-            en: "+99362998301",
             ru: "+99362998301",
             tk: "+99362998301",
           },
           text: {
-            tr: "Biz bilen galyn!",
-            en: "Biz bilen galyn!",
             ru: "Biz bilen galyn!",
             tk: "Biz bilen galyn!",
           },
@@ -2183,71 +2174,11 @@
    3. LANGUAGES + UI TEXT
    ========================================================================== */
       const LANGS = [
-        { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-        { code: "en", label: "English", flag: "🇬🇧" },
         { code: "ru", label: "Русский", flag: "🇷🇺" },
         { code: "tk", label: "Türkmençe", flag: "🇹🇲" },
       ];
 
       const T = {
-        tr: {
-          tagline: "Online sipariş",
-          welcome: "Hoş geldiniz",
-          cart: "Sepetim",
-          empty: "Sepetiniz boş",
-          emptyHint: "Beğendiğiniz ürüne dokunun, buraya eklenir.",
-          total: "Toplam",
-          order: "Sipariş",
-          sendOrder: "Mesaj ile sipariş ver",
-          clear: "Sepeti boşalt",
-          added: "sepete eklendi",
-          item: "ürün",
-          addToCart: "Sepete ekle",
-          viewCart: "Sepete git",
-          name: "Adınız *",
-          address: "Adresiniz *",
-          cartEmptyWarn: "Sepetiniz boş",
-          noPhone: "Telefon numarası ayarlanmamış (CONFIG.phone)",
-          missingInfo: "Lütfen adınızı ve adresinizi girin",
-          opening: "Mesaj uygulaması açılıyor…",
-          msgHello: "Merhaba! Sipariş vermek istiyorum:",
-          msgTotal: "Toplam",
-          msgName: "Ad",
-          msgAddress: "Adres",
-          visitors: "ziyaretçi",
-          cartShort: "Sepet",
-          goShop: "Market",
-          goMeal: "Yemek",
-        },
-        en: {
-          tagline: "Order online",
-          welcome: "Welcome",
-          cart: "My cart",
-          empty: "Your cart is empty",
-          emptyHint: "Tap a product and it lands here.",
-          total: "Total",
-          order: "Order",
-          sendOrder: "Order by text message",
-          clear: "Clear cart",
-          added: "added to cart",
-          item: "items",
-          addToCart: "Add to cart",
-          viewCart: "Go to cart",
-          name: "Your name *",
-          address: "Your address *",
-          cartEmptyWarn: "Your cart is empty",
-          noPhone: "Phone number is not set (CONFIG.phone)",
-          missingInfo: "Please enter your name and address",
-          opening: "Opening your messages app…",
-          msgHello: "Hello! I would like to order:",
-          msgTotal: "Total",
-          msgName: "Name",
-          msgAddress: "Address",
-          visitors: "visitors",
-          cartShort: "Cart",
-          goShop: "Shop",
-          goMeal: "Meal",
-        },
         ru: {
           tagline: "Заказ онлайн",
           welcome: "Добро пожаловать",
@@ -2316,8 +2247,6 @@
         {
           id: "breakfast",
           name: {
-            en: "Breakfast",
-            tr: "Kahvaltılar",
             tk: "Ertirlikler",
             ru: "Завтраки",
           },
@@ -2326,8 +2255,6 @@
             {
               id: "p6845",
               name: {
-                en: "Turkish Breakfast",
-                tr: "Türk Kahvaltısı",
                 tk: "Türk ertirligi",
                 ru: "Турецкий завтрак",
               },
@@ -2337,8 +2264,6 @@
             {
               id: "p6846",
               name: {
-                en: "Fried Eggs with Cheese and Mushrooms",
-                tr: "Peynirli Mantarlı Yumurta",
                 tk: "Peýnirli we kömelekli ýumurtga",
                 ru: "Яичница с сыром и грибами",
               },
@@ -2348,8 +2273,6 @@
             {
               id: "p6847",
               name: {
-                en: "Fried Eggs with Govurdak",
-                tr: "Kavurmalı Yumurta",
                 tk: "Gowurdakly ýumurtga",
                 ru: "Яичница с говурдаком",
               },
@@ -2359,8 +2282,6 @@
             {
               id: "p6848",
               name: {
-                en: "Menemen",
-                tr: "Menemen",
                 tk: "Menemen",
                 ru: "Менемен",
               },
@@ -2370,8 +2291,6 @@
             {
               id: "p6849",
               name: {
-                en: "Mexican Omelette",
-                tr: "Meksika Usulü Omlet",
                 tk: "Meksikan omleti",
                 ru: "Омлет по-мексикански",
               },
@@ -2381,8 +2300,6 @@
             {
               id: "p6850",
               name: {
-                en: "Omelette with Sausage",
-                tr: "Sucuklu Omlet",
                 tk: "Kolbasaly omlet",
                 ru: "Омлет с колбасой",
               },
@@ -2392,8 +2309,6 @@
             {
               id: "p6851",
               name: {
-                en: "Omelette with Mushrooms",
-                tr: "Mantarlı Omlet",
                 tk: "Kömelekli omlet",
                 ru: "Омлет с грибами",
               },
@@ -2403,8 +2318,6 @@
             {
               id: "p6852",
               name: {
-                en: "Bruschetta",
-                tr: "Bruschetta",
                 tk: "Brusketta",
                 ru: "Брускетты",
               },
@@ -2414,8 +2327,6 @@
             {
               id: "p6853",
               name: {
-                en: "Toast",
-                tr: "Tost",
                 tk: "Tost",
                 ru: "Тост",
               },
@@ -2425,8 +2336,6 @@
             {
               id: "p6854",
               name: {
-                en: "Big Sandwich",
-                tr: "Big Sandviç",
                 tk: "Uly sendwiç",
                 ru: "Биг сэндвич",
               },
@@ -2436,8 +2345,6 @@
             {
               id: "p6855",
               name: {
-                en: "Ham Sandwich",
-                tr: "Jambonlu Sandviç",
                 tk: "Wetçinaly sendwiç",
                 ru: "Сэндвич с ветчиной",
               },
@@ -2447,8 +2354,6 @@
             {
               id: "p6856",
               name: {
-                en: "Club Sandwich",
-                tr: "Klüp Sandviç",
                 tk: "Klub sendwiç",
                 ru: "Клаб сэндвич",
               },
@@ -2460,8 +2365,6 @@
         {
           id: "fast-food",
           name: {
-            en: "Fast Food",
-            tr: "Fast Food",
             tk: "Fast Fud",
             ru: "Фаст фуд",
           },
@@ -2470,8 +2373,6 @@
             {
               id: "p6857",
               name: {
-                en: "Doner with Bread",
-                tr: "Ekmek Arası Döner",
                 tk: "Çörekli döner",
                 ru: "Донер с хлебом",
               },
@@ -2481,8 +2382,6 @@
             {
               id: "p6858",
               name: {
-                en: "Doner with Lavash",
-                tr: "Lavaş Döner",
                 tk: "Lawaşly döner",
                 ru: "Донер с лавашом",
               },
@@ -2492,8 +2391,6 @@
             {
               id: "p6859",
               name: {
-                en: "Burger",
-                tr: "Burger",
                 tk: "Burger",
                 ru: "Бургер",
               },
@@ -2503,8 +2400,6 @@
             {
               id: "p6860",
               name: {
-                en: "Chicken Burger",
-                tr: "Tavuk Burger",
                 tk: "Towuk burger",
                 ru: "Чикен бургер",
               },
@@ -2514,8 +2409,6 @@
             {
               id: "p6861",
               name: {
-                en: "Cheeseburger",
-                tr: "Çizburger",
                 tk: "Çizburger",
                 ru: "Чизбургер",
               },
@@ -2525,8 +2418,6 @@
             {
               id: "p6862",
               name: {
-                en: "Double Burger",
-                tr: "Double Burger",
                 tk: "Goşa burger",
                 ru: "Дабл бургер",
               },
@@ -2536,8 +2427,6 @@
             {
               id: "p6863",
               name: {
-                en: "Chef Burger",
-                tr: "Şef Burger",
                 tk: "Şef burger",
                 ru: "Шеф бургер",
               },
@@ -2547,8 +2436,6 @@
             {
               id: "p6864",
               name: {
-                en: "KFC Fried Chicken",
-                tr: "KFC Tavuk",
                 tk: "KFS towuk",
                 ru: "КФС",
               },
@@ -2560,8 +2447,6 @@
         {
           id: "salads",
           name: {
-            en: "Salads",
-            tr: "Salatalar",
             tk: "Salatlar",
             ru: "Салаты",
           },
@@ -2569,8 +2454,6 @@
             {
               id: "p6865",
               name: {
-                en: "Warm Beef Salad",
-                tr: "Ilık Dana Etli Salata",
                 tk: "Mylaýym sygyr etli salat",
                 ru: "Тёплый салат с говядиной",
               },
@@ -2580,8 +2463,6 @@
             {
               id: "p6869",
               name: {
-                en: "Kurbas Salad",
-                tr: "Kurbaş Salata",
                 tk: "Kurbaş salady",
                 ru: "Салат Курбас",
               },
@@ -2591,8 +2472,6 @@
             {
               id: "p6870",
               name: {
-                en: "Herring under a Fur Coat",
-                tr: "Şubalı Ringa Salatası",
                 tk: "Şuba astyndaky seld",
                 ru: "Селёдка под шубой",
               },
@@ -2602,8 +2481,6 @@
             {
               id: "p6871",
               name: {
-                en: "Crab Salad",
-                tr: "Yengeçli Salata",
                 tk: "Krab salady",
                 ru: "Крабовый салат",
               },
@@ -2613,8 +2490,6 @@
             {
               id: "p6872",
               name: {
-                en: "Eggplant Salad",
-                tr: "Patlıcan Salatası",
                 tk: "Badamjan salady",
                 ru: "Баклажановый салат",
               },
@@ -2624,8 +2499,6 @@
             {
               id: "p6873",
               name: {
-                en: "Greek Salad",
-                tr: "Yunan Salatası",
                 tk: "Grek salady",
                 ru: "Греческий салат",
               },
@@ -2635,8 +2508,6 @@
             {
               id: "p6874",
               name: {
-                en: "Thai Salad",
-                tr: "Tayland Salatası",
                 tk: "Taý salady",
                 ru: "Тайский салат",
               },
@@ -2646,8 +2517,6 @@
             {
               id: "p6875",
               name: {
-                en: "Turkish Salad",
-                tr: "Türk Salatası",
                 tk: "Türk salady",
                 ru: "Турецкий салат",
               },
@@ -2657,8 +2526,6 @@
             {
               id: "p6876",
               name: {
-                en: "Italian Salad",
-                tr: "İtalyan Salatası",
                 tk: "Italýan salady",
                 ru: "Итальянский салат",
               },
@@ -2668,8 +2535,6 @@
             {
               id: "p6877",
               name: {
-                en: "Olivier Salad",
-                tr: "Olivye Salatası",
                 tk: "Olihwe salady",
                 ru: "Оливье",
               },
@@ -2679,8 +2544,6 @@
             {
               id: "p6878",
               name: {
-                en: "Man's Caprice Salad",
-                tr: "Erkek Kaprisi Salatası",
                 tk: "Erkek islegi salady",
                 ru: "Мужской каприз",
               },
@@ -2690,8 +2553,6 @@
             {
               id: "p6879",
               name: {
-                en: "For Friends Salad",
-                tr: "Dostlar İçin Salata",
                 tk: "Dostlar üçin salat",
                 ru: "Для друзей",
               },
@@ -2701,8 +2562,6 @@
             {
               id: "p6881",
               name: {
-                en: "Vkusnyashka Salad",
-                tr: "Lezzet Salatası",
                 tk: "Süýjüjik salat",
                 ru: "Вкусняшка",
               },
@@ -2712,8 +2571,6 @@
             {
               id: "p6882",
               name: {
-                en: "Smoky Salad",
-                tr: "Dumanlı Salata",
                 tk: "Tüsseli salat",
                 ru: "Дымок",
               },
@@ -2723,8 +2580,6 @@
             {
               id: "p6883",
               name: {
-                en: "Suzme with Garlic",
-                tr: "Sarımsaklı Süzme",
                 tk: "Sarymsakly süzme",
                 ru: "Сюзьма с чесноком",
               },
@@ -2734,8 +2589,6 @@
             {
               id: "p6884",
               name: {
-                en: "Fresh Salad",
-                tr: "Taze Salata",
                 tk: "Täze salat",
                 ru: "Свежий салат",
               },
@@ -2745,8 +2598,6 @@
             {
               id: "p6885",
               name: {
-                en: "Shepherd's Salad",
-                tr: "Çoban Salatası",
                 tk: "Çopan salady",
                 ru: "Чобан салат",
               },
@@ -2758,8 +2609,6 @@
         {
           id: "dessert-salads-fruits",
           name: {
-            en: "Dessert Salads & Fruits",
-            tr: "Tatlı Salatalar ve Meyveler",
             tk: "Süýji salatlar we miweler",
             ru: "Салаты-десерты и фрукты",
           },
@@ -2768,8 +2617,6 @@
             {
               id: "p8825",
               name: {
-                en: "Miweli Sokolad",
-                tr: "Miweli Sokolad",
                 tk: "Miweli Sokolad",
                 ru: "Miweli Sokolad",
               },
@@ -2779,8 +2626,6 @@
             {
               id: "p6888",
               name: {
-                en: "Fruit Garden",
-                tr: "Meyve Bahçesi",
                 tk: "Miwe bagy",
                 ru: "Фруктовый сад",
               },
@@ -2790,8 +2635,6 @@
             {
               id: "p6889",
               name: {
-                en: "Fruit Fairy",
-                tr: "Meyve Perisi",
                 tk: "Miwe perisi",
                 ru: "Фруктовая фея",
               },
@@ -2803,8 +2646,6 @@
         {
           id: "cold-appetizers",
           name: {
-            en: "Cold Appetizers",
-            tr: "Soğuk Mezeler",
             tk: "Sowuk işdäaçarlar",
             ru: "Холодные закуски",
           },
@@ -2812,8 +2653,6 @@
             {
               id: "p6890",
               name: {
-                en: "Assorted Vegetables",
-                tr: "Sebze Tabağı",
                 tk: "Gök önüm assorti",
                 ru: "Овощное ассорти",
               },
@@ -2823,8 +2662,6 @@
             {
               id: "p6891",
               name: {
-                en: "Assorted Pickles",
-                tr: "Turşu Tabağı",
                 tk: "Duzly assorti",
                 ru: "Солёное ассорти",
               },
@@ -2834,8 +2671,6 @@
             {
               id: "p6892",
               name: {
-                en: "Assorted Fruits",
-                tr: "Meyve Tabağı",
                 tk: "Miwe assorti",
                 ru: "Фруктовое ассорти",
               },
@@ -2845,8 +2680,6 @@
             {
               id: "p6893",
               name: {
-                en: "Assorted Cold Cuts",
-                tr: "Et Tabağı",
                 tk: "Et assorti",
                 ru: "Мясное ассорти",
               },
@@ -2856,8 +2689,6 @@
             {
               id: "p6894",
               name: {
-                en: "Assorted Cheeses",
-                tr: "Peynir Tabağı",
                 tk: "Peýnir assorti",
                 ru: "Сырное ассорти",
               },
@@ -2867,8 +2698,6 @@
             {
               id: "p6895",
               name: {
-                en: "Caprese",
-                tr: "Caprese",
                 tk: "Kaprese",
                 ru: "Капрезе",
               },
@@ -2878,8 +2707,6 @@
             {
               id: "p6896",
               name: {
-                en: "Lemon",
-                tr: "Limon",
                 tk: "Limon",
                 ru: "Лимон",
               },
@@ -2889,8 +2716,6 @@
             {
               id: "p6897",
               name: {
-                en: "Lemon / Pineapple / Olives",
-                tr: "Limon / Ananas / Zeytin",
                 tk: "Limon / Ananas / Zeýtun",
                 ru: "Лимон / ананас / маслины",
               },
@@ -2900,8 +2725,6 @@
             {
               id: "p6898",
               name: {
-                en: "Herring with Potatoes",
-                tr: "Patatesli Ringa Balığı",
                 tk: "Kartoşkaly seld",
                 ru: "Селёдка с картофелем",
               },
@@ -2911,8 +2734,6 @@
             {
               id: "p6900",
               name: {
-                en: "Eggplant Rolls",
-                tr: "Patlıcan Rulo",
                 tk: "Badamjan ruletjikleri",
                 ru: "Рулетики из баклажан",
               },
@@ -2922,8 +2743,6 @@
             {
               id: "p6901",
               name: {
-                en: "Suzma with Garlic and Herbs",
-                tr: "Sarımsaklı Otlu Süzme",
                 tk: "Sarymsakly we gök otly süzme",
                 ru: "Сюзьма с чесноком и зеленью",
               },
@@ -2935,8 +2754,6 @@
         {
           id: "soups",
           name: {
-            en: "Soups",
-            tr: "Çorbalar",
             tk: "Çorbalar",
             ru: "Супы",
           },
@@ -2945,8 +2762,6 @@
             {
               id: "p6902",
               name: {
-                en: "Cream of Mushroom Soup",
-                tr: "Mantar Kremalı Çorba",
                 tk: "Kömelek krem çorbasy",
                 ru: "Грибной крем-суп",
               },
@@ -2956,8 +2771,6 @@
             {
               id: "p6903",
               name: {
-                en: "Cream of Chicken Soup",
-                tr: "Tavuk Kremalı Çorba",
                 tk: "Towuk krem çorbasy",
                 ru: "Куриный крем-суп",
               },
@@ -2967,8 +2780,6 @@
             {
               id: "p6904",
               name: {
-                en: "Lentil Soup (Mercimek)",
-                tr: "Mercimek Çorbası",
                 tk: "Merjimek çorbasy",
                 ru: "Мерджимек",
               },
@@ -2978,8 +2789,6 @@
             {
               id: "p6905",
               name: {
-                en: "Ezogelin Soup",
-                tr: "Ezogelin Çorbası",
                 tk: "Ezogelin çorbasy",
                 ru: "Эзогелин",
               },
@@ -2989,8 +2798,6 @@
             {
               id: "p6907",
               name: {
-                en: "Mengen Soup",
-                tr: "Mengen Çorbası",
                 tk: "Mengen çorbasy",
                 ru: "Менген",
               },
@@ -3000,8 +2807,6 @@
             {
               id: "p6908",
               name: {
-                en: "Tomato Soup",
-                tr: "Domates Çorbası",
                 tk: "Pomidor çorbasy",
                 ru: "Томатный суп",
               },
@@ -3011,8 +2816,6 @@
             {
               id: "p6910",
               name: {
-                en: "Spinach Soup",
-                tr: "Ispanak Çorbası",
                 tk: "Ysmanak çorbasy",
                 ru: "Шпинатный суп",
               },
@@ -3022,8 +2825,6 @@
             {
               id: "p6912",
               name: {
-                en: "Un-Ash Noodle Soup",
-                tr: "Un Aş Çorbası",
                 tk: "Un aş",
                 ru: "Ун-аш",
               },
@@ -3033,8 +2834,6 @@
             {
               id: "p6913",
               name: {
-                en: "Lagman",
-                tr: "Lağman",
                 tk: "Lagman",
                 ru: "Лагман",
               },
@@ -3044,8 +2843,6 @@
             {
               id: "p6914",
               name: {
-                en: "Toy Chorba (Feast Soup)",
-                tr: "Toy Çorbası",
                 tk: "Toý çorbasy",
                 ru: "Той чорба",
               },
@@ -3055,8 +2852,6 @@
             {
               id: "p6915",
               name: {
-                en: "Pelmeni in Broth",
-                tr: "Etli Pelmeni Çorbası",
                 tk: "Çorbaly pelmeni",
                 ru: "Пельмени с бульоном",
               },
@@ -3066,8 +2861,6 @@
             {
               id: "p6917",
               name: {
-                en: "Okroshka",
-                tr: "Okroşka",
                 tk: "Okroşka",
                 ru: "Окрошка",
               },
@@ -3077,8 +2870,6 @@
             {
               id: "p6919",
               name: {
-                en: "Dograma",
-                tr: "Dograma",
                 tk: "Dogroma",
                 ru: "Дограма",
               },
@@ -3088,8 +2879,6 @@
             {
               id: "p6920",
               name: {
-                en: "Meatball Soup",
-                tr: "Köfteli Çorba",
                 tk: "Tefteli çorba",
                 ru: "Тефтельный суп",
               },
@@ -3101,8 +2890,6 @@
         {
           id: "pasta-side-dishes",
           name: {
-            en: "Pasta & Side Dishes",
-            tr: "Makarna ve Garnitürler",
             tk: "Pasta we garnirler",
             ru: "Паста и гарниры",
           },
@@ -3111,8 +2898,6 @@
             {
               id: "p6921",
               name: {
-                en: "Rice",
-                tr: "Pilav",
                 tk: "Tüwi",
                 ru: "Рис",
               },
@@ -3122,8 +2907,6 @@
             {
               id: "p6922",
               name: {
-                en: "Buckwheat",
-                tr: "Karabuğday",
                 tk: "Grečka",
                 ru: "Гречка",
               },
@@ -3133,8 +2916,6 @@
             {
               id: "p6923",
               name: {
-                en: "Mashed Potatoes",
-                tr: "Patates Püresi",
                 tk: "Kartoşka pýuresi",
                 ru: "Картофельное пюре",
               },
@@ -3144,8 +2925,6 @@
             {
               id: "p6924",
               name: {
-                en: "French Fries",
-                tr: "Patates Kızartması",
                 tk: "Fri kartoşka",
                 ru: "Картофель фри",
               },
@@ -3155,8 +2934,6 @@
             {
               id: "p6925",
               name: {
-                en: "Homestyle Potatoes with Mushrooms",
-                tr: "Mantarlı Ev Usulü Patates",
                 tk: "Öý usulynda kömelekli kartoşka",
                 ru: "Картофель по-домашнему с грибами",
               },
@@ -3166,8 +2943,6 @@
             {
               id: "p6926",
               name: {
-                en: "Spaghetti with Pesto Sauce",
-                tr: "Pesto Soslu Spagetti",
                 tk: "Pesto sously spagetti",
                 ru: "Спагетти с соусом песто",
               },
@@ -3177,8 +2952,6 @@
             {
               id: "p6927",
               name: {
-                en: "Spaghetti Bolognese",
-                tr: "Spagetti Bolonez",
                 tk: "Spagetti bolonez",
                 ru: "Спагетти болоньезе",
               },
@@ -3188,8 +2961,6 @@
             {
               id: "p6928",
               name: {
-                en: "Fettuccine Alfredo",
-                tr: "Fettuccine Alfredo",
                 tk: "Fettuçino Alfredo",
                 ru: "Феттуччине Альфредо",
               },
@@ -3201,8 +2972,6 @@
         {
           id: "pastry-dough-dishes",
           name: {
-            en: "Pastry & Dough Dishes",
-            tr: "Hamur İşleri",
             tk: "Un önümleri",
             ru: "Мучные изделия",
           },
@@ -3210,8 +2979,6 @@
             {
               id: "p6930",
               name: {
-                en: "Somsa",
-                tr: "Somsa",
                 tk: "Somsa",
                 ru: "Сомса",
               },
@@ -3221,8 +2988,6 @@
             {
               id: "p6931",
               name: {
-                en: "Fitchi",
-                tr: "Fitçi",
                 tk: "Fitçi",
                 ru: "Фитчи",
               },
@@ -3232,8 +2997,6 @@
             {
               id: "p6932",
               name: {
-                en: "Cheburek",
-                tr: "Çiğbörek",
                 tk: "Çeburek",
                 ru: "Чебуреки",
               },
@@ -3243,8 +3006,6 @@
             {
               id: "p6934",
               name: {
-                en: "Manti with Minced Meat",
-                tr: "Kıymalı Mantı",
                 tk: "Farşly manty",
                 ru: "Манты с фаршем",
               },
@@ -3254,8 +3015,6 @@
             {
               id: "p6935",
               name: {
-                en: "Manti with Diced Meat",
-                tr: "Kuşbaşı Etli Mantı",
                 tk: "Dogralan etli manty",
                 ru: "Манты из нарезного мяса",
               },
@@ -3265,8 +3024,6 @@
             {
               id: "p6936",
               name: {
-                en: "Pelmeni",
-                tr: "Pelmeni",
                 tk: "Pelmeni",
                 ru: "Пельмени",
               },
@@ -3276,8 +3033,6 @@
             {
               id: "p6937",
               name: {
-                en: "Quesadilla",
-                tr: "Kesadilya",
                 tk: "Kesadilýa",
                 ru: "Кесадилья",
               },
@@ -3287,8 +3042,6 @@
             {
               id: "p6938",
               name: {
-                en: "Assorted Pie",
-                tr: "Karışık Börek",
                 tk: "Assorti pirog",
                 ru: "Пирог ассорти",
               },
@@ -3298,8 +3051,6 @@
             {
               id: "p6939",
               name: {
-                en: "Minced Meat Pie",
-                tr: "Kıymalı Börek",
                 tk: "Farşly pirog",
                 ru: "Пирог с фаршем",
               },
@@ -3309,8 +3060,6 @@
             {
               id: "p6940",
               name: {
-                en: "Lezgin Pie",
-                tr: "Lezgi Böreği",
                 tk: "Lezgin pirogy",
                 ru: "Пирог лезгинский",
               },
@@ -3320,8 +3069,6 @@
             {
               id: "p6941",
               name: {
-                en: "Four Seasons Pizza",
-                tr: "Dört Mevsim Pizza",
                 tk: "Dört pasyl pizza",
                 ru: "Пицца 4 сезона",
               },
@@ -3331,8 +3078,6 @@
             {
               id: "p6942",
               name: {
-                en: "Assorted Pizza",
-                tr: "Karışık Pizza",
                 tk: "Assorti pizza",
                 ru: "Пицца ассорти",
               },
@@ -3342,8 +3087,6 @@
             {
               id: "p6943",
               name: {
-                en: "Chicken Pizza",
-                tr: "Tavuklu Pizza",
                 tk: "Towukly pizza",
                 ru: "Пицца куриная",
               },
@@ -3353,8 +3096,6 @@
             {
               id: "p6944",
               name: {
-                en: "Meat Pizza",
-                tr: "Etli Pizza",
                 tk: "Etli pizza",
                 ru: "Пицца мясная",
               },
@@ -3364,8 +3105,6 @@
             {
               id: "p6945",
               name: {
-                en: "Mushroom Pizza",
-                tr: "Mantarlı Pizza",
                 tk: "Kömelekli pizza",
                 ru: "Пицца грибная",
               },
@@ -3375,8 +3114,6 @@
             {
               id: "p6946",
               name: {
-                en: "Pepperoni Pizza",
-                tr: "Pepperoni Pizza",
                 tk: "Pepperoni pizza",
                 ru: "Пицца пепперони",
               },
@@ -3386,8 +3123,6 @@
             {
               id: "p6948",
               name: {
-                en: "White Sauce Pizza",
-                tr: "Beyaz Soslu Pizza",
                 tk: "Ak sously pizza",
                 ru: "Пицца на белом соусе",
               },
@@ -3397,8 +3132,6 @@
             {
               id: "p6949",
               name: {
-                en: "Margherita Pizza",
-                tr: "Margarita Pizza",
                 tk: "Margarita pizza",
                 ru: "Пицца Маргарита",
               },
@@ -3408,8 +3141,6 @@
             {
               id: "p6950",
               name: {
-                en: "Pide with Diced Meat",
-                tr: "Kuşbaşı Etli Pide",
                 tk: "Dogralan etli pide",
                 ru: "Пиде с нарезным мясом",
               },
@@ -3419,8 +3150,6 @@
             {
               id: "p6951",
               name: {
-                en: "Mixed Pide",
-                tr: "Karışık Pide",
                 tk: "Garyşyk pide",
                 ru: "Пиде микс",
               },
@@ -3430,8 +3159,6 @@
             {
               id: "p6952",
               name: {
-                en: "Karadeniz Pide",
-                tr: "Karadeniz Pide",
                 tk: "Garadeňiz pide",
                 ru: "Пиде Карадениз",
               },
@@ -3441,8 +3168,6 @@
             {
               id: "p6953",
               name: {
-                en: "Lahmacun",
-                tr: "Lahmacun",
                 tk: "Lahmajun",
                 ru: "Лахмаджун",
               },
@@ -3454,8 +3179,6 @@
         {
           id: "hot-meat-dishes",
           name: {
-            en: "Hot Meat Dishes",
-            tr: "Sıcak Et Yemekleri",
             tk: "Gyzgyn et tagamlary",
             ru: "Горячие блюда из мяса",
           },
@@ -3464,8 +3187,6 @@
             {
               id: "p6956",
               name: {
-                en: "Chef's Special",
-                tr: "Şefin Özel Yemeği",
                 tk: "Şef aşpezden tagam",
                 ru: "Блюдо от шеф-повара",
               },
@@ -3475,8 +3196,6 @@
             {
               id: "p6957",
               name: {
-                en: "Kakmach in Butter",
-                tr: "Tereyağlı Kakmaç",
                 tk: "Mesgeli kakmaç",
                 ru: "Какмач на сливочном масле",
               },
@@ -3486,8 +3205,6 @@
             {
               id: "p6958",
               name: {
-                en: "Kakmach Batyrma",
-                tr: "Kakmaç Batırma",
                 tk: "Kakmaç batyrma",
                 ru: "Какмач батырма",
               },
@@ -3497,8 +3214,6 @@
             {
               id: "p6959",
               name: {
-                en: "Fajitas",
-                tr: "Fajita",
                 tk: "Fahitos",
                 ru: "Фахитос",
               },
@@ -3508,8 +3223,6 @@
             {
               id: "p6960",
               name: {
-                en: "Beef Stroganoff",
-                tr: "Bef Stroganof",
                 tk: "Befstroganow",
                 ru: "Бефстроганов",
               },
@@ -3519,8 +3232,6 @@
             {
               id: "p6961",
               name: {
-                en: "Beef in Mustard Sauce",
-                tr: "Hardal Soslu Et",
                 tk: "Gorçisa sously et",
                 ru: "Мясо в горчичном соусе",
               },
@@ -3530,8 +3241,6 @@
             {
               id: "p6962",
               name: {
-                en: "Beef French Style",
-                tr: "Fransız Usulü Et",
                 tk: "Fransuz usulynda et",
                 ru: "Мясо по-французски",
               },
@@ -3541,8 +3250,6 @@
             {
               id: "p6963",
               name: {
-                en: "Beef Chinese Style",
-                tr: "Çin Usulü Et",
                 tk: "Hytaý usulynda et",
                 ru: "Мясо по-китайски",
               },
@@ -3552,8 +3259,6 @@
             {
               id: "p6964",
               name: {
-                en: "Fried Liver",
-                tr: "Ciğer Tava",
                 tk: "Gowrulan bagyr",
                 ru: "Печень жареная",
               },
@@ -3563,8 +3268,6 @@
             {
               id: "p6965",
               name: {
-                en: "Lamb with Mushrooms",
-                tr: "Mantarlı Kuzu Eti",
                 tk: "Kömelekli goýun eti",
                 ru: "Баранина с грибами",
               },
@@ -3574,8 +3277,6 @@
             {
               id: "p6966",
               name: {
-                en: "Lamb Ribs",
-                tr: "Kuzu Kaburga",
                 tk: "Goýun gapyrgasy",
                 ru: "Бараньи рёбрышки",
               },
@@ -3585,8 +3286,6 @@
             {
               id: "p6967",
               name: {
-                en: "Lamb Shank",
-                tr: "Kuzu İncik",
                 tk: "Goýun injigi",
                 ru: "Бараньи голени",
               },
@@ -3596,8 +3295,6 @@
             {
               id: "p6969",
               name: {
-                en: "Chicken Nuggets",
-                tr: "Tavuk Nugget",
                 tk: "Nagetsy",
                 ru: "Нагетсы",
               },
@@ -3607,8 +3304,6 @@
             {
               id: "p6972",
               name: {
-                en: "Plov (Pilaf)",
-                tr: "Pilav",
                 tk: "Palow",
                 ru: "Палов",
               },
@@ -3618,8 +3313,6 @@
             {
               id: "p6973",
               name: {
-                en: "Izmir Kofte",
-                tr: "İzmir Köfte",
                 tk: "Izmir köfte",
                 ru: "Измир кёфте",
               },
@@ -3629,8 +3322,6 @@
             {
               id: "p6974",
               name: {
-                en: "Jyz-Jyz Kofte",
-                tr: "Cız Bız Köfte",
                 tk: "Jyz-jyz köfte",
                 ru: "Джыз-джыз кёфте",
               },
@@ -3642,8 +3333,6 @@
         {
           id: "hot-fish-dishes",
           name: {
-            en: "Hot Fish Dishes",
-            tr: "Sıcak Balık Yemekleri",
             tk: "Gyzgyn balyk tagamlary",
             ru: "Горячие блюда из рыбы",
           },
@@ -3652,8 +3341,6 @@
             {
               id: "p6980",
               name: {
-                en: "Fried Mullet",
-                tr: "Kızarmış Kefal",
                 tk: "Gowrulan kefal",
                 ru: "Кефаль жареная",
               },
@@ -3663,8 +3350,6 @@
             {
               id: "p6981",
               name: {
-                en: "Mullet Baked in Foil",
-                tr: "Folyoda Fırınlanmış Kefal",
                 tk: "Folgada bişirilen kefal",
                 ru: "Кефаль запечённая в фольге",
               },
@@ -3674,8 +3359,6 @@
             {
               id: "p6982",
               name: {
-                en: "Fried Pike Perch",
-                tr: "Kızarmış Sudak",
                 tk: "Gowrulan sudak",
                 ru: "Судак жареный",
               },
@@ -3685,8 +3368,6 @@
             {
               id: "p6983",
               name: {
-                en: "Pike Perch Baked in Foil",
-                tr: "Folyoda Fırınlanmış Sudak",
                 tk: "Folgada bişirilen sudak",
                 ru: "Судак запечённый в фольге",
               },
@@ -3696,8 +3377,6 @@
             {
               id: "p6984",
               name: {
-                en: "Fried Sturgeon",
-                tr: "Kızarmış Mersin Balığı",
                 tk: "Gowrulan bekre",
                 ru: "Осетрина жареная",
               },
@@ -3707,8 +3386,6 @@
             {
               id: "p6985",
               name: {
-                en: "Sturgeon French Style",
-                tr: "Fransız Usulü Mersin Balığı",
                 tk: "Fransuz usulynda bekre",
                 ru: "Осетрина по-французски",
               },
@@ -3718,8 +3395,6 @@
             {
               id: "p6986",
               name: {
-                en: "Grilled Mullet",
-                tr: "Mangalda Kefal",
                 tk: "Mangalda kefal",
                 ru: "Кефаль на мангале",
               },
@@ -3729,8 +3404,6 @@
             {
               id: "p6987",
               name: {
-                en: "Grilled Sturgeon",
-                tr: "Mangalda Mersin Balığı",
                 tk: "Mangalda bekre",
                 ru: "Осетрина на мангале",
               },
@@ -3740,8 +3413,6 @@
             {
               id: "p6988",
               name: {
-                en: "Mullet (Kefal)",
-                tr: "Kefal",
                 tk: "Kefal",
                 ru: "Кефаль",
               },
@@ -3753,8 +3424,6 @@
         {
           id: "hot-chicken-dishes",
           name: {
-            en: "Hot Chicken Dishes",
-            tr: "Sıcak Tavuk Yemekleri",
             tk: "Gyzgyn towuk tagamlary",
             ru: "Горячие блюда из курицы",
           },
@@ -3763,8 +3432,6 @@
             {
               id: "p6991",
               name: {
-                en: "Chicken Fillet in Cracker Crust",
-                tr: "Krakerli Tavuk Fileto",
                 tk: "Krekerli towuk filesi",
                 ru: "Куриное филе в крекерах",
               },
@@ -3774,8 +3441,6 @@
             {
               id: "p6992",
               name: {
-                en: "Chicken Breast in Creamy Mushroom Sauce",
-                tr: "Mantar Kremalı Tavuk Göğsü",
                 tk: "Kömelek kremli towuk döşi",
                 ru: "Куриная грудка под сливочно-грибным соусом",
               },
@@ -3785,8 +3450,6 @@
             {
               id: "p6993",
               name: {
-                en: "Chicken Breast in Curry Sauce",
-                tr: "Köri Soslu Tavuk Göğsü",
                 tk: "Karri sously towuk döşi",
                 ru: "Куриная грудка в карри соусе",
               },
@@ -3796,8 +3459,6 @@
             {
               id: "p6994",
               name: {
-                en: "Chicken Breast with Spinach",
-                tr: "Ispanaklı Tavuk Göğsü",
                 tk: "Ysmanakly towuk döşi",
                 ru: "Куриная грудка со шпинатом",
               },
@@ -3807,8 +3468,6 @@
             {
               id: "p6995",
               name: {
-                en: "Chicken Sauté",
-                tr: "Tavuk Sote",
                 tk: "Towuk sote",
                 ru: "Куриное соте",
               },
@@ -3818,8 +3477,6 @@
             {
               id: "p6996",
               name: {
-                en: "Chicken Chakhokhbili",
-                tr: "Tavuk Çahohbili",
                 tk: "Towuk çahohbili",
                 ru: "Курица чахохбили",
               },
@@ -3829,8 +3486,6 @@
             {
               id: "p6997",
               name: {
-                en: "Chicken Lasagna",
-                tr: "Tavuklu Lazanya",
                 tk: "Towukly lazanýa",
                 ru: "Куриная лазанья",
               },
@@ -3840,8 +3495,6 @@
             {
               id: "p6998",
               name: {
-                en: "Chicken Fillet French Style",
-                tr: "Fransız Usulü Tavuk Fileto",
                 tk: "Fransuz usulynda towuk filesi",
                 ru: "Куриное филе по-французски",
               },
@@ -3851,8 +3504,6 @@
             {
               id: "p6999",
               name: {
-                en: "Chicken Wings in Teriyaki Sauce",
-                tr: "Teriyaki Soslu Tavuk Kanat",
                 tk: "Teriýaki sously towuk ganady",
                 ru: "Куриные крылышки в терияки соусе",
               },
@@ -3862,8 +3513,6 @@
             {
               id: "p7000",
               name: {
-                en: "Chicken Kiev",
-                tr: "Kiev Köftesi",
                 tk: "Kiýew kotleti",
                 ru: "Котлеты по-киевски",
               },
@@ -3873,8 +3522,6 @@
             {
               id: "p7001",
               name: {
-                en: "Baby Chicken in Butter",
-                tr: "Tereyağlı Piliç",
                 tk: "Mesgeli jüýje",
                 ru: "Цыплёнок на сливочном масле",
               },
@@ -3884,8 +3531,6 @@
             {
               id: "p7002",
               name: {
-                en: "Baby Chicken Batyrma",
-                tr: "Piliç Batırma",
                 tk: "Jüýje batyrma",
                 ru: "Цыплёнок батырма",
               },
@@ -3897,8 +3542,6 @@
         {
           id: "steaks",
           name: {
-            en: "Steaks",
-            tr: "Biftekler",
             tk: "Steýkler",
             ru: "Стейки",
           },
@@ -3907,8 +3550,6 @@
             {
               id: "p7003",
               name: {
-                en: "T-Bone Steak",
-                tr: "T-Bone Biftek",
                 tk: "T-bone steýk",
                 ru: "Стейк Т-бон",
               },
@@ -3918,8 +3559,6 @@
             {
               id: "p7004",
               name: {
-                en: "Dallas Steak",
-                tr: "Dallas Biftek",
                 tk: "Dallas steýk",
                 ru: "Стейк Даллас",
               },
@@ -3929,8 +3568,6 @@
             {
               id: "p7005",
               name: {
-                en: "New York Steak",
-                tr: "New York Biftek",
                 tk: "Nýu-Ýork steýk",
                 ru: "Стейк Нью-Йорк",
               },
@@ -3940,8 +3577,6 @@
             {
               id: "p7006",
               name: {
-                en: "Medallion Steak",
-                tr: "Madalyon Biftek",
                 tk: "Medalýon steýk",
                 ru: "Стейк медальон",
               },
@@ -3951,8 +3586,6 @@
             {
               id: "p7007",
               name: {
-                en: "Chicken Breast Steak",
-                tr: "Tavuk Göğsü Biftek",
                 tk: "Towuk döş steýki",
                 ru: "Куриная грудка",
               },
@@ -3964,8 +3597,6 @@
         {
           id: "turkish-dishes",
           name: {
-            en: "Turkish Dishes",
-            tr: "Türk Yemekleri",
             tk: "Türk tagamlary",
             ru: "Турецкие блюда",
           },
@@ -3974,8 +3605,6 @@
             {
               id: "p7008",
               name: {
-                en: "Adana Kebab",
-                tr: "Adana Kebap",
                 tk: "Adana kebap",
                 ru: "Адана кебап",
               },
@@ -3985,8 +3614,6 @@
             {
               id: "p7009",
               name: {
-                en: "Ali Nazik Kebab",
-                tr: "Ali Nazik Kebap",
                 tk: "Ali Nazik kebap",
                 ru: "Али Назик кебап",
               },
@@ -3996,8 +3623,6 @@
             {
               id: "p7010",
               name: {
-                en: "Beyti Kebab",
-                tr: "Beyti Kebap",
                 tk: "Beýti kebap",
                 ru: "Бейти кебап",
               },
@@ -4007,8 +3632,6 @@
             {
               id: "p7011",
               name: {
-                en: "Eggplant Kebab",
-                tr: "Patlıcan Kebap",
                 tk: "Badamjan kebap",
                 ru: "Баклажан кебап",
               },
@@ -4018,8 +3641,6 @@
             {
               id: "p7012",
               name: {
-                en: "Iskender Kebab",
-                tr: "İskender Kebap",
                 tk: "Iskender kebap",
                 ru: "Искендер кебап",
               },
@@ -4029,8 +3650,6 @@
             {
               id: "p7014",
               name: {
-                en: "Lamb Chops (Kuzu Pirzola)",
-                tr: "Kuzu Pirzola",
                 tk: "Guzy pirzola",
                 ru: "Кузу пирзола",
               },
@@ -4040,8 +3659,6 @@
             {
               id: "p7016",
               name: {
-                en: "Grilled Kofte",
-                tr: "Izgara Köfte",
                 tk: "Yzgara köfte",
                 ru: "Изгара кёфте",
               },
@@ -4051,8 +3668,6 @@
             {
               id: "p7017",
               name: {
-                en: "Kofte with Kashar Cheese",
-                tr: "Kaşarlı Köfte",
                 tk: "Kaşarly köfte",
                 ru: "Кашарлы кёфте",
               },
@@ -4062,8 +3677,6 @@
             {
               id: "p7018",
               name: {
-                en: "Izmir Kofte",
-                tr: "İzmir Köfte",
                 tk: "Izmir köfte",
                 ru: "Измир кёфте",
               },
@@ -4075,8 +3688,6 @@
         {
           id: "grill-skewers",
           name: {
-            en: "Grill & Skewers",
-            tr: "Mangal ve Şiş",
             tk: "Şaşlyklar",
             ru: "Шашлыки",
           },
@@ -4085,8 +3696,6 @@
             {
               id: "p8826",
               name: {
-                en: "Ассорти на мангале",
-                tr: "Ассорти на мангале",
                 tk: "Assorty mangal",
                 ru: "Ассорти на мангале",
               },
@@ -4096,8 +3705,6 @@
             {
               id: "p8827",
               name: {
-                en: "Ассорти на мангале",
-                tr: "Ассорти на мангале",
                 tk: "Assorty mangal",
                 ru: "Ассорти на мангале",
               },
@@ -4107,8 +3714,6 @@
             {
               id: "p7020",
               name: {
-                en: "Beef Lula Kebab",
-                tr: "Dana Lüle Kebap",
                 tk: "Sygyr etli lýulýa",
                 ru: "Люля говяжье",
               },
@@ -4118,8 +3723,6 @@
             {
               id: "p7021",
               name: {
-                en: "Chicken Lula Kebab",
-                tr: "Tavuk Lüle Kebap",
                 tk: "Towuk lýulýa",
                 ru: "Люля куриный",
               },
@@ -4129,8 +3732,6 @@
             {
               id: "p7022",
               name: {
-                en: "Beef Cutlet with Cheese",
-                tr: "Peynirli Dana Köfte",
                 tk: "Peýnirli sygyr kotleti",
                 ru: "Котлет говяжий с сыром",
               },
@@ -4140,8 +3741,6 @@
             {
               id: "p7023",
               name: {
-                en: "Chicken Cutlet with Cheese",
-                tr: "Peynirli Tavuk Köfte",
                 tk: "Peýnirli towuk kotleti",
                 ru: "Котлет куриный с сыром",
               },
@@ -4151,8 +3750,6 @@
             {
               id: "p7024",
               name: {
-                en: "Lamb Shashlik",
-                tr: "Kuzu Şiş",
                 tk: "Goýun şaşlygy",
                 ru: "Баранина",
               },
@@ -4162,8 +3759,6 @@
             {
               id: "p7026",
               name: {
-                en: "Liver in Caul Fat",
-                tr: "Yağda Ciğer",
                 tk: "Ýagly bagyr",
                 ru: "Печень в жиру",
               },
@@ -4173,8 +3768,6 @@
             {
               id: "p7027",
               name: {
-                en: "Beef Shashlik",
-                tr: "Dana Şiş",
                 tk: "Sygyr şaşlygy",
                 ru: "Говядина",
               },
@@ -4184,8 +3777,6 @@
             {
               id: "p7028",
               name: {
-                en: "Lakomka Skewer",
-                tr: "Lakomka Şiş",
                 tk: "Lakomka şaşlyk",
                 ru: "Лакомка",
               },
@@ -4195,8 +3786,6 @@
             {
               id: "p7029",
               name: {
-                en: "Chicken on the Bone",
-                tr: "Kemikli Tavuk Şiş",
                 tk: "Süňkli towuk şaşlygy",
                 ru: "Курица с косточкой",
               },
@@ -4206,8 +3795,6 @@
             {
               id: "p7030",
               name: {
-                en: "Chicken Wings",
-                tr: "Tavuk Kanat",
                 tk: "Towuk ganady",
                 ru: "Куриные крылышки",
               },
@@ -4217,8 +3804,6 @@
             {
               id: "p7031",
               name: {
-                en: "Chicken Tabaka",
-                tr: "Tavuk Tabaka",
                 tk: "Towuk tabaka",
                 ru: "Куриный табака",
               },
@@ -4228,8 +3813,6 @@
             {
               id: "p7032",
               name: {
-                en: "Grilled Baby Chicken",
-                tr: "Mangalda Piliç",
                 tk: "Mangalda jüýje",
                 ru: "Цыплёнок на мангале",
               },
@@ -4239,8 +3822,6 @@
             {
               id: "p7033",
               name: {
-                en: "Grilled Quail",
-                tr: "Mangalda Bıldırcın",
                 tk: "Mangalda bedene",
                 ru: "Перепёлка на мангале",
               },
@@ -4250,8 +3831,6 @@
             {
               id: "p7034",
               name: {
-                en: "Mixed Grill Platter",
-                tr: "Karışık Mangal Tabağı",
                 tk: "Mangal assorti",
                 ru: "Ассорти на мангале",
               },
@@ -4261,8 +3840,6 @@
             {
               id: "p7036",
               name: {
-                en: "Beyti Sarma",
-                tr: "Beyti Sarma",
                 tk: "Beýti sarma",
                 ru: "Бейти сарма",
               },
@@ -4272,8 +3849,6 @@
             {
               id: "p7038",
               name: {
-                en: "Lamb Ribs (Goyun Gapyrga)",
-                tr: "Kuzu Kaburga",
                 tk: "Goýun gapyrga",
                 ru: "Гойун гапурга",
               },
@@ -4283,8 +3858,6 @@
             {
               id: "p7043",
               name: {
-                en: "Chicken Breast",
-                tr: "Tavuk Göğsü",
                 tk: "Towuk döş",
                 ru: "Куриная грудка",
               },
@@ -4296,8 +3869,6 @@
         {
           id: "mocktails",
           name: {
-            en: "Mocktails",
-            tr: "Alkolsüz Kokteyller",
             tk: "Alkogolsyz kokteýller",
             ru: "Безалкогольные коктейли",
           },
@@ -4305,8 +3876,6 @@
             {
               id: "p7046",
               name: {
-                en: "Classic Lemonade",
-                tr: "Klasik Limonata",
                 tk: "Klassiki limonad",
                 ru: "Классический лимонад",
               },
@@ -4316,8 +3885,6 @@
             {
               id: "p7047",
               name: {
-                en: "Strawberry Lemonade",
-                tr: "Çilekli Limonata",
                 tk: "Ýer tudanaly limonad",
                 ru: "Клубничный лимонад",
               },
@@ -4327,8 +3894,6 @@
             {
               id: "p7048",
               name: {
-                en: "Citrus Lemonade",
-                tr: "Narenciye Limonata",
                 tk: "Sitrus limonady",
                 ru: "Цитрусовый лимонад",
               },
@@ -4338,8 +3903,6 @@
             {
               id: "p7049",
               name: {
-                en: "Blue Lagoon Mojito",
-                tr: "Mavi Lagün Mojito",
                 tk: "Gök lagun mohito",
                 ru: "Мохито Голубая лагуна",
               },
@@ -4349,8 +3912,6 @@
             {
               id: "p7050",
               name: {
-                en: "Classic Mojito",
-                tr: "Klasik Mojito",
                 tk: "Klassiki mohito",
                 ru: "Мохито классический",
               },
@@ -4360,8 +3921,6 @@
             {
               id: "p7051",
               name: {
-                en: "Kiwi Mojito",
-                tr: "Kivili Mojito",
                 tk: "Kiwili mohito",
                 ru: "Мохито киви",
               },
@@ -4371,8 +3930,6 @@
             {
               id: "p7052",
               name: {
-                en: "Berry Mojito",
-                tr: "Orman Meyveli Mojito",
                 tk: "Miweli mohito",
                 ru: "Мохито ягодный",
               },
@@ -4382,8 +3939,6 @@
             {
               id: "p7053",
               name: {
-                en: "Energy Mojito",
-                tr: "Enerji Mojito",
                 tk: "Energetik mohito",
                 ru: "Мохито энергетический",
               },
@@ -4395,8 +3950,6 @@
         {
           id: "milkshakes",
           name: {
-            en: "Milkshakes",
-            tr: "Milkshake",
             tk: "Süýtli kokteýller",
             ru: "Молочные коктейли",
           },
@@ -4405,8 +3958,6 @@
             {
               id: "p7054",
               name: {
-                en: "Oreo Milkshake",
-                tr: "Oreo Milkshake",
                 tk: "Oreo kokteýli",
                 ru: "Молочный коктейль Oreo",
               },
@@ -4416,8 +3967,6 @@
             {
               id: "p7055",
               name: {
-                en: "Snickers Milkshake",
-                tr: "Snickers Milkshake",
                 tk: "Snickers kokteýli",
                 ru: "Сникерс",
               },
@@ -4427,8 +3976,6 @@
             {
               id: "p7056",
               name: {
-                en: "Raffaello Milkshake",
-                tr: "Raffaello Milkshake",
                 tk: "Rafaello kokteýli",
                 ru: "Рафаэлло",
               },
@@ -4438,8 +3985,6 @@
             {
               id: "p7057",
               name: {
-                en: "Chocolate Milkshake",
-                tr: "Çikolatalı Milkshake",
                 tk: "Şokoladly kokteýl",
                 ru: "Шоколадный",
               },
@@ -4449,8 +3994,6 @@
             {
               id: "p7058",
               name: {
-                en: "Caramel Milkshake",
-                tr: "Karamelli Milkshake",
                 tk: "Karamelli kokteýl",
                 ru: "Карамельный",
               },
@@ -4460,8 +4003,6 @@
             {
               id: "p7059",
               name: {
-                en: "Strawberry Milkshake",
-                tr: "Çilekli Milkshake",
                 tk: "Ýer tudanaly kokteýl",
                 ru: "Клубничный",
               },
@@ -4471,8 +4012,6 @@
             {
               id: "p7060",
               name: {
-                en: "Banana Milkshake",
-                tr: "Muzlu Milkshake",
                 tk: "Banan kokteýli",
                 ru: "Банановый",
               },
@@ -4482,8 +4021,6 @@
             {
               id: "p7061",
               name: {
-                en: "Assorted Ice Cream",
-                tr: "Karışık Dondurma",
                 tk: "Dondurma assorti",
                 ru: "Ассорти мороженое",
               },
@@ -4495,8 +4032,6 @@
         {
           id: "smoothies",
           name: {
-            en: "Smoothies",
-            tr: "Smoothie",
             tk: "Smuzi",
             ru: "Смузи",
           },
@@ -4504,8 +4039,6 @@
             {
               id: "p7063",
               name: {
-                en: "Banana & Kiwi Smoothie",
-                tr: "Muz ve Kivi Smoothie",
                 tk: "Banan we kiwi smuzi",
                 ru: "Банан и киви",
               },
@@ -4515,8 +4048,6 @@
             {
               id: "p7064",
               name: {
-                en: "Strawberry Smoothie",
-                tr: "Çilek Smoothie",
                 tk: "Ýer tudanaly smuzi",
                 ru: "Клубничный",
               },
@@ -4526,8 +4057,6 @@
             {
               id: "p7065",
               name: {
-                en: "Detox Smoothie",
-                tr: "Detoks Smoothie",
                 tk: "Detoks smuzi",
                 ru: "Детокс",
               },
@@ -4537,8 +4066,6 @@
             {
               id: "p7066",
               name: {
-                en: "Fruit Smoothie",
-                tr: "Meyveli Smoothie",
                 tk: "Miweli smuzi",
                 ru: "Фруктовый",
               },
@@ -4550,8 +4077,6 @@
         {
           id: "lemonade",
           name: {
-            en: "Lemonade",
-            tr: "Limonata",
             tk: "Limonad",
             ru: "Лимонад",
           },
@@ -4560,8 +4085,6 @@
             {
               id: "p7075",
               name: {
-                en: "Berry Lemonade",
-                tr: "Orman Meyveli Limonata",
                 tk: "Miweli limonad",
                 ru: "Ягодный",
               },
@@ -4571,8 +4094,6 @@
             {
               id: "p7076",
               name: {
-                en: "Classic Lemonade",
-                tr: "Klasik Limonata",
                 tk: "Klassiki limonad",
                 ru: "Классический",
               },
@@ -4582,8 +4103,6 @@
             {
               id: "p7077",
               name: {
-                en: "Strawberry Lemonade",
-                tr: "Çilekli Limonata",
                 tk: "Ýer tudanaly limonad",
                 ru: "Клубничный",
               },
@@ -4593,8 +4112,6 @@
             {
               id: "p7078",
               name: {
-                en: "Apple Lemonade",
-                tr: "Elmalı Limonata",
                 tk: "Almaly limonad",
                 ru: "Яблочный",
               },
@@ -4709,9 +4226,9 @@
         }),
       );
 
-      const t = (key) => (T[state.lang] || T.en)[key] || key;
+      const t = (key) => (T[state.lang] || T.ru)[key] || key;
       const tr = (obj) =>
-        obj ? obj[state.lang] || obj.en || Object.values(obj)[0] || "" : "";
+        obj ? obj[state.lang] || obj.ru || Object.values(obj)[0] || "" : "";
       const nameOf = (item) => tr(item.name);
       const money = (n) => {
         const num = Number(n).toFixed(2).replace(/\.00$/, "");

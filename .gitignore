@@ -1,0 +1,11 @@
+# macOS
+# Finder gezdiğin her klasöre bunu bırakır.
+# Finder drops this into every folder you open.
+.DS_Store
+
+# Yerel veri yedeği / local data export
+# İçinde yönetici parolası ve tablet/garson PIN'leri var — bu depo herkese
+# açık bir GitHub Pages sitesi, yani buraya asla girmemeli.
+# Holds the admin password hash and the tablet/waiter PINs. This repo is a
+# public GitHub Pages site, so it must never be committed.
+turkana-restoran-backup-*/

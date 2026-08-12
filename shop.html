@@ -13,7 +13,7 @@
   2) ÜRÜN EKLEMEK      →  MENU listesinde her ürün TEK bir kayıt (tek div/kart):
      ADD A PRODUCT     →  one entry per product inside MENU:
 
-        { id: "p1", name: { tr:"Adı", en:"Name", ru:"Имя", tk:"Ady" },
+        { id: "p1", name: { ru:"Имя", tk:"Ady" },
           price: 12.5, image: "burger-burger1.webp" }
 
   3) RESİMLER          →  "uploads_products/" klasörüne koy, sadece adını yaz.
@@ -26,7 +26,7 @@
   hazırdır. PDF yoktur.
   ============================================================================
 -->
-<html lang="tr" data-theme="dark">
+<html lang="ru" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -161,8 +161,8 @@
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <span class="flag" id="langFlag">🇹🇷</span>
-            <span class="code" id="langCode">TR</span>
+            <span class="flag" id="langFlag">🇷🇺</span>
+            <span class="code" id="langCode">RU</span>
           </button>
           <div class="lang-menu" id="langMenu" role="menu"></div>
         </div>
@@ -2102,7 +2102,7 @@
         brand: "Turkana-Market", // üst barda görünen isim / name in the header
         currency: "m", // para birimi / currency symbol
         currencyAfter: true, // simge fiyatın sonunda mı? / symbol after the price
-        defaultLanguage: "ru", // tr | en | ru | tk
+        defaultLanguage: "ru", // ru | tk
         defaultTheme: "light", // dark | light
 
         // Parallax alanı / parallax hero artwork
@@ -2135,14 +2135,10 @@
         {
           image: "pizza.webp",
           title: {
-            tr: "Tagamly pizzalar bizde",
-            en: "Tagamly pizzalar bizde",
             ru: "Tagamly pizzalar bizde",
             tk: "Tagamly pizzalar bizde",
           },
           text: {
-            tr: "Turkana restoran sizin hyzmatynyzda!",
-            en: "Turkana restoran sizin hyzmatynyzda!",
             ru: "Turkana restoran sizin hyzmatynyzda!",
             tk: "Turkana restoran sizin hyzmatynyzda!",
           },
@@ -2150,14 +2146,10 @@
         {
           image: "samekan.webp",
           title: {
-            tr: "Bizin salgymyz",
-            en: "Bizin salgymyz",
             ru: "Bizin salgymyz",
             tk: "Bizin salgymyz",
           },
           text: {
-            tr: "Samekan otel 1 nji gat",
-            en: "Samekan otel 1 nji gat",
             ru: "Samekan otel 1 nji gat",
             tk: "Samekan otel 1 nji gat",
           },
@@ -2165,14 +2157,10 @@
         {
           image: "turkana.webp",
           title: {
-            tr: "+99362998301",
-            en: "+99362998301",
             ru: "+99362998301",
             tk: "+99362998301",
           },
           text: {
-            tr: "Biz bilen galyn!",
-            en: "Biz bilen galyn!",
             ru: "Biz bilen galyn!",
             tk: "Biz bilen galyn!",
           },
@@ -2183,71 +2171,11 @@
    3. LANGUAGES + UI TEXT
    ========================================================================== */
       const LANGS = [
-        { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-        { code: "en", label: "English", flag: "🇬🇧" },
         { code: "ru", label: "Русский", flag: "🇷🇺" },
         { code: "tk", label: "Türkmençe", flag: "🇹🇲" },
       ];
 
       const T = {
-        tr: {
-          tagline: "Online sipariş",
-          welcome: "Hoş geldiniz",
-          cart: "Sepetim",
-          empty: "Sepetiniz boş",
-          emptyHint: "Beğendiğiniz ürüne dokunun, buraya eklenir.",
-          total: "Toplam",
-          order: "Sipariş",
-          sendOrder: "Mesaj ile sipariş ver",
-          clear: "Sepeti boşalt",
-          added: "sepete eklendi",
-          item: "ürün",
-          addToCart: "Sepete ekle",
-          viewCart: "Sepete git",
-          name: "Adınız *",
-          address: "Adresiniz *",
-          cartEmptyWarn: "Sepetiniz boş",
-          noPhone: "Telefon numarası ayarlanmamış (CONFIG.phone)",
-          missingInfo: "Lütfen adınızı ve adresinizi girin",
-          opening: "Mesaj uygulaması açılıyor…",
-          msgHello: "Merhaba! Sipariş vermek istiyorum:",
-          msgTotal: "Toplam",
-          msgName: "Ad",
-          msgAddress: "Adres",
-          visitors: "ziyaretçi",
-          cartShort: "Sepet",
-          goShop: "Market",
-          goMeal: "Yemek",
-        },
-        en: {
-          tagline: "Order online",
-          welcome: "Welcome",
-          cart: "My cart",
-          empty: "Your cart is empty",
-          emptyHint: "Tap a product and it lands here.",
-          total: "Total",
-          order: "Order",
-          sendOrder: "Order by text message",
-          clear: "Clear cart",
-          added: "added to cart",
-          item: "items",
-          addToCart: "Add to cart",
-          viewCart: "Go to cart",
-          name: "Your name *",
-          address: "Your address *",
-          cartEmptyWarn: "Your cart is empty",
-          noPhone: "Phone number is not set (CONFIG.phone)",
-          missingInfo: "Please enter your name and address",
-          opening: "Opening your messages app…",
-          msgHello: "Hello! I would like to order:",
-          msgTotal: "Total",
-          msgName: "Name",
-          msgAddress: "Address",
-          visitors: "visitors",
-          cartShort: "Cart",
-          goShop: "Shop",
-          goMeal: "Meal",
-        },
         ru: {
           tagline: "Заказ онлайн",
           welcome: "Добро пожаловать",
@@ -2317,8 +2245,6 @@
         {
           id: "molped",
           name: {
-            en: "Molped",
-            tr: "Molped",
             tk: "Molped",
             ru: "Molped",
           },
@@ -2326,8 +2252,6 @@
             {
               id: "s11103",
               name: {
-                en: "Lux Comford",
-                tr: "Lux Comford",
                 tk: "Lux Comford",
                 ru: "Lux Comford",
               },
@@ -2337,8 +2261,6 @@
             {
               id: "s11104",
               name: {
-                en: "Sen Comfort",
-                tr: "Sen Comfort",
                 tk: "Sen Comfort",
                 ru: "Sen Comfort",
               },
@@ -2348,8 +2270,6 @@
             {
               id: "s11105",
               name: {
-                en: "Sen Comfort Pamuk",
-                tr: "Sen Comfort Pamuk",
                 tk: "Sen Comfort Pamuk",
                 ru: "Sen Comfort Pamuk",
               },
@@ -2359,8 +2279,6 @@
             {
               id: "s11106",
               name: {
-                en: "Ladyfit",
-                tr: "Ladyfit",
                 tk: "Ladyfit",
                 ru: "Ladyfit",
               },
@@ -2370,8 +2288,6 @@
             {
               id: "s11107",
               name: {
-                en: "Sleepy Natural",
-                tr: "Sleepy Natural",
                 tk: "Sleepy Natural",
                 ru: "Sleepy Natural",
               },
@@ -2381,8 +2297,6 @@
             {
               id: "s11108",
               name: {
-                en: "Kotex",
-                tr: "Kotex",
                 tk: "Kotex",
                 ru: "Kotex",
               },
@@ -2394,8 +2308,6 @@
         {
           id: "zlet",
           name: {
-            en: "Zlet",
-            tr: "Zlet",
             tk: "Zlet",
             ru: "Zlet",
           },
@@ -2403,8 +2315,6 @@
             {
               id: "s11109",
               name: {
-                en: "Zlet",
-                tr: "Zlet",
                 tk: "Zlet",
                 ru: "Zlet",
               },
@@ -2414,8 +2324,6 @@
             {
               id: "s11110",
               name: {
-                en: "Zlet",
-                tr: "Zlet",
                 tk: "Zlet",
                 ru: "Zlet",
               },
@@ -2427,8 +2335,6 @@
         {
           id: "himiya",
           name: {
-            en: "Himiya",
-            tr: "Himiya",
             tk: "Himiya",
             ru: "Himiya",
           },
@@ -2436,8 +2342,6 @@
             {
               id: "s11037",
               name: {
-                en: "Ave Sampun",
-                tr: "Ave Sampun",
                 tk: "Ave Sampun",
                 ru: "Ave Sampun",
               },
@@ -2447,8 +2351,6 @@
             {
               id: "s11031",
               name: {
-                en: "Clear Shampun",
-                tr: "Clear Shampun",
                 tk: "Clear Shampun",
                 ru: "Clear Shampun",
               },
@@ -2458,8 +2360,6 @@
             {
               id: "s11033",
               name: {
-                en: "Dove Sabyn",
-                tr: "Dove Sabyn",
                 tk: "Dove Sabyn",
                 ru: "Dove Sabyn",
               },
@@ -2469,8 +2369,6 @@
             {
               id: "s11032",
               name: {
-                en: "Gun Krem",
-                tr: "Gun Krem",
                 tk: "Gun Krem",
                 ru: "Gun Krem",
               },
@@ -2480,8 +2378,6 @@
             {
               id: "s11034",
               name: {
-                en: "Herbi Pasta",
-                tr: "Herbi Pasta",
                 tk: "Herbi Pasta",
                 ru: "Herbi Pasta",
               },
@@ -2491,8 +2387,6 @@
             {
               id: "s11035",
               name: {
-                en: "Paradontax",
-                tr: "Paradontax",
                 tk: "Paradontax",
                 ru: "Paradontax",
               },
@@ -2502,8 +2396,6 @@
             {
               id: "s11036",
               name: {
-                en: "Zity mylo",
-                tr: "Zity mylo",
                 tk: "Zity mylo",
                 ru: "Zity mylo",
               },
@@ -2515,8 +2407,6 @@
         {
           id: "kupalnik",
           name: {
-            en: "Kupalnik",
-            tr: "Kupalnik",
             tk: "Kupalnik",
             ru: "Kupalnik",
           },
@@ -2524,8 +2414,6 @@
             {
               id: "s11004",
               name: {
-                en: "Kupalnik",
-                tr: "Kupalnik",
                 tk: "Kupalnik",
                 ru: "Kupalnik",
               },
@@ -2535,8 +2423,6 @@
             {
               id: "s11006",
               name: {
-                en: "Kupalnik No1",
-                tr: "Kupalnik No1",
                 tk: "Kupalnik No1",
                 ru: "Kupalnik No1",
               },
@@ -2546,8 +2432,6 @@
             {
               id: "s11023",
               name: {
-                en: "Kupalnik No11",
-                tr: "Kupalnik No11",
                 tk: "Kupalnik No11",
                 ru: "Kupalnik No11",
               },
@@ -2557,8 +2441,6 @@
             {
               id: "s11024",
               name: {
-                en: "Kupalnik No12",
-                tr: "Kupalnik No12",
                 tk: "Kupalnik No12",
                 ru: "Kupalnik No12",
               },
@@ -2568,8 +2450,6 @@
             {
               id: "s11007",
               name: {
-                en: "Kupalnik No2",
-                tr: "Kupalnik No2",
                 tk: "Kupalnik No2",
                 ru: "Kupalnik No2",
               },
@@ -2579,8 +2459,6 @@
             {
               id: "s11008",
               name: {
-                en: "Kupalnik No3",
-                tr: "Kupalnik No3",
                 tk: "Kupalnik No3",
                 ru: "Kupalnik No3",
               },
@@ -2590,8 +2468,6 @@
             {
               id: "s11009",
               name: {
-                en: "Kupalnik No4",
-                tr: "Kupalnik No4",
                 tk: "Kupalnik No4",
                 ru: "Kupalnik No4",
               },
@@ -2601,8 +2477,6 @@
             {
               id: "s11010",
               name: {
-                en: "Kupalnik No5",
-                tr: "Kupalnik No5",
                 tk: "Kupalnik No5",
                 ru: "Kupalnik No5",
               },
@@ -2612,8 +2486,6 @@
             {
               id: "s11019",
               name: {
-                en: "Kupalnik No6",
-                tr: "Kupalnik No6",
                 tk: "Kupalnik No6",
                 ru: "Kupalnik No6",
               },
@@ -2623,8 +2495,6 @@
             {
               id: "s11020",
               name: {
-                en: "Kupalnik No7",
-                tr: "Kupalnik No7",
                 tk: "Kupalnik No7",
                 ru: "Kupalnik No7",
               },
@@ -2634,8 +2504,6 @@
             {
               id: "s11021",
               name: {
-                en: "Kupalnik No8",
-                tr: "Kupalnik No8",
                 tk: "Kupalnik No8",
                 ru: "Kupalnik No8",
               },
@@ -2645,8 +2513,6 @@
             {
               id: "s11022",
               name: {
-                en: "Kupalnik No9",
-                tr: "Kupalnik No10",
                 tk: "Kupalnik No10",
                 ru: "Kupalnik No10",
               },
@@ -2656,8 +2522,6 @@
             {
               id: "s11005",
               name: {
-                en: "Kupalnik ak",
-                tr: "Kupalnik ak",
                 tk: "Kupalnik ak",
                 ru: "Kupalnik ak",
               },
@@ -2669,8 +2533,6 @@
         {
           id: "azyk",
           name: {
-            en: "Azyk",
-            tr: "Azyk",
             tk: "Azyk",
             ru: "Azyk",
           },
@@ -2678,8 +2540,6 @@
             {
               id: "s11064",
               name: {
-                en: "Anakom",
-                tr: "Anakom",
                 tk: "Anakom",
                 ru: "Anakom",
               },
@@ -2689,8 +2549,6 @@
             {
               id: "s11086",
               name: {
-                en: "Arahis",
-                tr: "Arahis",
                 tk: "Arahis",
                 ru: "Arahis",
               },
@@ -2700,8 +2558,6 @@
             {
               id: "s11078",
               name: {
-                en: "Kix Max",
-                tr: "Kix Max",
                 tk: "Kix Max",
                 ru: "Kix Max",
               },
@@ -2711,8 +2567,6 @@
             {
               id: "s11059",
               name: {
-                en: "MacCoffee",
-                tr: "MacCoffee",
                 tk: "MacCoffee",
                 ru: "MacCoffee",
               },
@@ -2722,8 +2576,6 @@
             {
               id: "s10976",
               name: {
-                en: "Yeserje",
-                tr: "Yeserje",
                 tk: "Yeserje",
                 ru: "Yeserje",
               },
@@ -2735,8 +2587,6 @@
         {
           id: "keksler-we-kokeler",
           name: {
-            en: "Keksler we kokeler",
-            tr: "Keksler we kokeler",
             tk: "Keksler we kokeler",
             ru: "Keksler we kokeler",
           },
@@ -2744,8 +2594,6 @@
             {
               id: "s10977",
               name: {
-                en: "A",
-                tr: "A",
                 tk: "Panda Keks",
                 ru: "A",
               },
@@ -2755,8 +2603,6 @@
             {
               id: "s10986",
               name: {
-                en: "Break Delight",
-                tr: "A",
                 tk: "Break Delight",
                 ru: "A",
               },
@@ -2766,8 +2612,6 @@
             {
               id: "s11081",
               name: {
-                en: "Choco Pie Original",
-                tr: "Choco Pie Original",
                 tk: "Choco Pie Original",
                 ru: "Choco Pie Original",
               },
@@ -2777,8 +2621,6 @@
             {
               id: "s11050",
               name: {
-                en: "Choco-Pie uly",
-                tr: "Choco-Pie uly",
                 tk: "Choco-Pie uly",
                 ru: "Choco-Pie uly",
               },
@@ -2788,8 +2630,6 @@
             {
               id: "s10967",
               name: {
-                en: "Cizi koke",
-                tr: "Cizi koke",
                 tk: "Cizi koke",
                 ru: "Cizi koke",
               },
@@ -2799,8 +2639,6 @@
             {
               id: "s10966",
               name: {
-                en: "Cizi vic koke",
-                tr: "Cizi vic koke",
                 tk: "Cizi vic koke",
                 ru: "Cizi vic koke",
               },
@@ -2810,8 +2648,6 @@
             {
               id: "s11056",
               name: {
-                en: "Cudo Wafli",
-                tr: "Cudo Wafli",
                 tk: "Cudo Wafli",
                 ru: "Cudo Wafli",
               },
@@ -2821,8 +2657,6 @@
             {
               id: "s11051",
               name: {
-                en: "Goute Koke",
-                tr: "Goute Koke",
                 tk: "Goute Koke",
                 ru: "Goute Koke",
               },
@@ -2832,8 +2666,6 @@
             {
               id: "s11055",
               name: {
-                en: "Halley",
-                tr: "Halley",
                 tk: "Halley",
                 ru: "Halley",
               },
@@ -2843,8 +2675,6 @@
             {
               id: "s11052",
               name: {
-                en: "Karowka Wafli",
-                tr: "Karowka Wafli",
                 tk: "Karowka Wafli",
                 ru: "Karowka Wafli",
               },
@@ -2854,8 +2684,6 @@
             {
               id: "s11077",
               name: {
-                en: "Kinder Delice",
-                tr: "Kinder Delice",
                 tk: "Kinder Delice",
                 ru: "Kinder Delice",
               },
@@ -2865,8 +2693,6 @@
             {
               id: "s10989",
               name: {
-                en: "Nutella Bisquit",
-                tr: "A",
                 tk: "Nutella Bisquit",
                 ru: "A",
               },
@@ -2876,8 +2702,6 @@
             {
               id: "s11053",
               name: {
-                en: "Oreo",
-                tr: "Oreo",
                 tk: "Oreo",
                 ru: "Oreo",
               },
@@ -2887,8 +2711,6 @@
             {
               id: "s11067",
               name: {
-                en: "Sirang keks",
-                tr: "Sirang keks",
                 tk: "Sirang keks",
                 ru: "Sirang keks",
               },
@@ -2898,8 +2720,6 @@
             {
               id: "s11054",
               name: {
-                en: "Sokoladnyye Wafli",
-                tr: "Sokoladnyye Wafli",
                 tk: "Sokoladnyye Wafli",
                 ru: "Sokoladnyye Wafli",
               },
@@ -2909,8 +2729,6 @@
             {
               id: "s11087",
               name: {
-                en: "Tam Cikolata",
-                tr: "Tam Cikolata",
                 tk: "Tam Cikolata",
                 ru: "Tam Cikolata",
               },
@@ -2920,8 +2738,6 @@
             {
               id: "s11088",
               name: {
-                en: "Tam Cikolata",
-                tr: "Tam Cikolata",
                 tk: "Tam Cikolata",
                 ru: "Tam Cikolata",
               },
@@ -2931,8 +2747,6 @@
             {
               id: "s11046",
               name: {
-                en: "Today Bubble Gum",
-                tr: "Today Bubble Gum",
                 tk: "Today Bubble Gum",
                 ru: "Today Bubble Gum",
               },
@@ -2942,8 +2756,6 @@
             {
               id: "s10969",
               name: {
-                en: "Today Donut",
-                tr: "Today Donut",
                 tk: "Today Donut",
                 ru: "Today Donut",
               },
@@ -2953,8 +2765,6 @@
             {
               id: "s10968",
               name: {
-                en: "Today Goldies Keks",
-                tr: "Today Goldies Keks",
                 tk: "Today Goldies Keks",
                 ru: "Today Goldies Keks",
               },
@@ -2964,8 +2774,6 @@
             {
               id: "s11070",
               name: {
-                en: "Today Krossan",
-                tr: "Today Krossan",
                 tk: "Today Krossan",
                 ru: "Today Krossan",
               },
@@ -2975,8 +2783,6 @@
             {
               id: "s10984",
               name: {
-                en: "Today Snowball",
-                tr: "A",
                 tk: "Today Snowball",
                 ru: "A",
               },
@@ -2986,8 +2792,6 @@
             {
               id: "s10985",
               name: {
-                en: "Today Snowball Yasyl",
-                tr: "A",
                 tk: "Today Snowball Yasyl",
                 ru: "A",
               },
@@ -2997,8 +2801,6 @@
             {
               id: "s11057",
               name: {
-                en: "Tort",
-                tr: "Tort",
                 tk: "Tort",
                 ru: "Tort",
               },
@@ -3008,8 +2810,6 @@
             {
               id: "s11083",
               name: {
-                en: "Ulker Chocolate Halley",
-                tr: "Ulker Chocolate Halley",
                 tk: "Ulker Chocolate Halley",
                 ru: "Ulker Chocolate Halley",
               },
@@ -3019,8 +2819,6 @@
             {
               id: "s10952",
               name: {
-                en: "Ulker Ikram",
-                tr: "Ulker Ikram",
                 tk: "Ulker Ikram",
                 ru: "Ulker Ikram",
               },
@@ -3032,8 +2830,6 @@
         {
           id: "cigitler",
           name: {
-            en: "Cigitler",
-            tr: "Cigitler",
             tk: "Cigitler",
             ru: "Cigitler",
           },
@@ -3041,8 +2837,6 @@
             {
               id: "s10972",
               name: {
-                en: "Arahis",
-                tr: "Arahis",
                 tk: "Arahis",
                 ru: "Arahis",
               },
@@ -3052,8 +2846,6 @@
             {
               id: "s11075",
               name: {
-                en: "Ermak cigit 200gr",
-                tr: "Ermak cigit 200gr",
                 tk: "Ermak cigit 200gr",
                 ru: "Ermak cigit 200gr",
               },
@@ -3063,8 +2855,6 @@
             {
               id: "s11085",
               name: {
-                en: "Martini Kadi Cigit",
-                tr: "Martini Kadi Cigit",
                 tk: "Martini Kadi Cigit",
                 ru: "Martini Kadi Cigit",
               },
@@ -3074,8 +2864,6 @@
             {
               id: "s11042",
               name: {
-                en: "Martini Semecki Gyzyl",
-                tr: "Martini Semecki Gyzyl",
                 tk: "Martini Semecki Gyzyl",
                 ru: "Martini Semecki Gyzyl",
               },
@@ -3085,8 +2873,6 @@
             {
               id: "s10970",
               name: {
-                en: "Martini Yadra",
-                tr: "Martini Yadra",
                 tk: "Martini Yadra",
                 ru: "Martini Yadra",
               },
@@ -3096,8 +2882,6 @@
             {
               id: "s10964",
               name: {
-                en: "Martini semecki",
-                tr: "Martini semecki",
                 tk: "Martini semecki",
                 ru: "Martini semecki",
               },
@@ -3107,8 +2891,6 @@
             {
               id: "s10971",
               name: {
-                en: "Molodyoznyye Semecki",
-                tr: "Molodyoznyye Semecki",
                 tk: "Molodyoznyy semecki",
                 ru: "Molodyoznyye Semecki",
               },
@@ -3118,8 +2900,6 @@
             {
               id: "s10955",
               name: {
-                en: "Pakize duzlanan cigit",
-                tr: "Pakize duzlanan cigit",
                 tk: "Pakize duzlanan cigit",
                 ru: "Pakize duzlanan cigit",
               },
@@ -3129,8 +2909,6 @@
             {
               id: "s11060",
               name: {
-                en: "Pisse Yunus",
-                tr: "Pisse Yunus",
                 tk: "Pisse Yunus",
                 ru: "Pisse Yunus",
               },
@@ -3140,8 +2918,6 @@
             {
               id: "s10949",
               name: {
-                en: "Pistacios",
-                tr: "Pistacios",
                 tk: "Pistacios",
                 ru: "Pistacios",
               },
@@ -3151,8 +2927,6 @@
             {
               id: "s10950",
               name: {
-                en: "Seeds cigit",
-                tr: "Seeds cigit",
                 tk: "Seeds cigit",
                 ru: "Seeds cigit",
               },
@@ -3164,8 +2938,6 @@
         {
           id: "chocolate",
           name: {
-            en: "Chocolate",
-            tr: "Cikolatalar",
             tk: "Sokolad we suyjiler",
             ru: "Sokolad we suyjiler",
           },
@@ -3173,8 +2945,6 @@
             {
               id: "s10987",
               name: {
-                en: "A",
-                tr: "A",
                 tk: "Albeni XXl",
                 ru: "A",
               },
@@ -3184,8 +2954,6 @@
             {
               id: "s10994",
               name: {
-                en: "Almond Wafle",
-                tr: "A",
                 tk: "Almond Wafle",
                 ru: "A",
               },
@@ -3195,8 +2963,6 @@
             {
               id: "s11062",
               name: {
-                en: "Babayewski",
-                tr: "Babayewski",
                 tk: "Babayewski",
                 ru: "Babayewski",
               },
@@ -3206,8 +2972,6 @@
             {
               id: "s11097",
               name: {
-                en: "Bounty",
-                tr: "Bounty",
                 tk: "Bounty",
                 ru: "Bounty",
               },
@@ -3217,8 +2981,6 @@
             {
               id: "s11096",
               name: {
-                en: "Bounty trio",
-                tr: "Bounty trio",
                 tk: "Bounty trio",
                 ru: "Bounty trio",
               },
@@ -3228,8 +2990,6 @@
             {
               id: "s11080",
               name: {
-                en: "Bueno Kinder",
-                tr: "Bueno Kinder",
                 tk: "Bueno Kinder",
                 ru: "Bueno Kinder",
               },
@@ -3239,8 +2999,6 @@
             {
               id: "s10991",
               name: {
-                en: "Hanuta",
-                tr: "Hanuta",
                 tk: "Hanuta",
                 ru: "Hanuta",
               },
@@ -3250,8 +3008,6 @@
             {
               id: "s11074",
               name: {
-                en: "Kinder Chocolate",
-                tr: "Kinder Chocolate",
                 tk: "Kinder Chocolate",
                 ru: "Kinder Chocolate",
               },
@@ -3261,8 +3017,6 @@
             {
               id: "s11079",
               name: {
-                en: "Kinder Maxi",
-                tr: "Kinder Maxi",
                 tk: "Kinder Maxi",
                 ru: "Kinder Maxi",
               },
@@ -3272,8 +3026,6 @@
             {
               id: "s11001",
               name: {
-                en: "Kinder chocolate",
-                tr: "Kinder chocolate",
                 tk: "Kinder chocolate",
                 ru: "Kinder chocolate",
               },
@@ -3283,8 +3035,6 @@
             {
               id: "s11084",
               name: {
-                en: "Magnolia sokolat",
-                tr: "Magnolia sokolat",
                 tk: "Magnolia sokolat",
                 ru: "Magnolia sokolat",
               },
@@ -3294,8 +3044,6 @@
             {
               id: "s11000",
               name: {
-                en: "Milka",
-                tr: "Milka",
                 tk: "Milka",
                 ru: "Milka",
               },
@@ -3305,8 +3053,6 @@
             {
               id: "s11003",
               name: {
-                en: "Milka Chococ Wafer",
-                tr: "Milka Chococ Wafer",
                 tk: "Milka Chococ Wafer",
                 ru: "Milka Chococ Wafer",
               },
@@ -3316,8 +3062,6 @@
             {
               id: "s11076",
               name: {
-                en: "MilkyWay",
-                tr: "MilkyWay",
                 tk: "MilkyWay",
                 ru: "MilkyWay",
               },
@@ -3327,8 +3071,6 @@
             {
               id: "s10988",
               name: {
-                en: "Nutella",
-                tr: "A",
                 tk: "Nutella",
                 ru: "A",
               },
@@ -3338,8 +3080,6 @@
             {
               id: "s10999",
               name: {
-                en: "Olyenka",
-                tr: "Olyenka",
                 tk: "Olyenka",
                 ru: "Olyenka",
               },
@@ -3349,8 +3089,6 @@
             {
               id: "s10962",
               name: {
-                en: "Picnic sokolad",
-                tr: "Picnic sokolad",
                 tk: "Picnic sokolad",
                 ru: "Picnic sokolad",
               },
@@ -3360,8 +3098,6 @@
             {
               id: "s10993",
               name: {
-                en: "Rafaella",
-                tr: "Rafaella",
                 tk: "Rafaella",
                 ru: "Rafaella",
               },
@@ -3371,8 +3107,6 @@
             {
               id: "s10990",
               name: {
-                en: "Raffaella",
-                tr: "A",
                 tk: "Raffaella",
                 ru: "A",
               },
@@ -3382,8 +3116,6 @@
             {
               id: "s10992",
               name: {
-                en: "Raffaello",
-                tr: "A",
                 tk: "Raffaello",
                 ru: "A",
               },
@@ -3393,8 +3125,6 @@
             {
               id: "s11061",
               name: {
-                en: "Roshen",
-                tr: "Roshen",
                 tk: "Roshen",
                 ru: "Roshen",
               },
@@ -3404,8 +3134,6 @@
             {
               id: "s11071",
               name: {
-                en: "Russia Sokolad",
-                tr: "Russia Sokolad",
                 tk: "Russia Sokolad",
                 ru: "Russia Sokolad",
               },
@@ -3415,8 +3143,6 @@
             {
               id: "s11099",
               name: {
-                en: "Snicker Plombir",
-                tr: "Snicker Plombir",
                 tk: "Snicker Plombir",
                 ru: "Snicker Plombir",
               },
@@ -3426,8 +3152,6 @@
             {
               id: "s11100",
               name: {
-                en: "Snickers Belyy",
-                tr: "Snickers Belyy",
                 tk: "Snickers Belyy",
                 ru: "Snickers Belyy",
               },
@@ -3437,8 +3161,6 @@
             {
               id: "s11098",
               name: {
-                en: "Snickers Super",
-                tr: "Snickers Super",
                 tk: "Snickers Super",
                 ru: "Snickers Super",
               },
@@ -3448,8 +3170,6 @@
             {
               id: "s11089",
               name: {
-                en: "Snikers",
-                tr: "Snikers",
                 tk: "Snikers",
                 ru: "Snikers",
               },
@@ -3459,8 +3179,6 @@
             {
               id: "s11047",
               name: {
-                en: "Sokokrem",
-                tr: "Sokokrem",
                 tk: "Sokokrem",
                 ru: "Sokokrem",
               },
@@ -3470,8 +3188,6 @@
             {
               id: "s10981",
               name: {
-                en: "Sokolad Molocnyy",
-                tr: "A",
                 tk: "Sokolad Molocnyy",
                 ru: "A",
               },
@@ -3481,8 +3197,6 @@
             {
               id: "s10995",
               name: {
-                en: "Sokolad minyon",
-                tr: "Sokolad minyon",
                 tk: "Sokolad minyon",
                 ru: "Sokolad minyon",
               },
@@ -3492,8 +3206,6 @@
             {
               id: "s10998",
               name: {
-                en: "Sokolad s Tertim mindal",
-                tr: "Sokolad s Tertim mindal",
                 tk: "Sokolad s Tertim mindal",
                 ru: "Sokolad s Tertim mindal",
               },
@@ -3503,8 +3215,6 @@
             {
               id: "s10996",
               name: {
-                en: "Ulker cikolata",
-                tr: "Ulker cikolata",
                 tk: "Ulker cikolata",
                 ru: "Ulker cikolata",
               },
@@ -3514,8 +3224,6 @@
             {
               id: "s10997",
               name: {
-                en: "Ulker cikolata 60bitter",
-                tr: "Ulker cikolata 60bitter",
                 tk: "Ulker cikolata 60bitter",
                 ru: "Ulker cikolata 60bitter",
               },
@@ -3525,8 +3233,6 @@
             {
               id: "s11101",
               name: {
-                en: "KitKat Chunky",
-                tr: "KitKat Chunky",
                 tk: "KitKat Chunky",
                 ru: "KitKat Chunky",
               },
@@ -3536,8 +3242,6 @@
             {
               id: "s11102",
               name: {
-                en: "Mars",
-                tr: "Mars",
                 tk: "Mars",
                 ru: "Mars",
               },
@@ -3549,8 +3253,6 @@
         {
           id: "cipsiler",
           name: {
-            en: "Cipsiler",
-            tr: "Cipsiler",
             tk: "Cipsiler",
             ru: "Cipsiler",
           },
@@ -3558,8 +3260,6 @@
             {
               id: "s11043",
               name: {
-                en: "Doritos",
-                tr: "Doritos",
                 tk: "Doritos",
                 ru: "Doritos",
               },
@@ -3569,8 +3269,6 @@
             {
               id: "s11072",
               name: {
-                en: "Hrus team",
-                tr: "Hrus team",
                 tk: "Hrus team",
                 ru: "Hrus team",
               },
@@ -3580,8 +3278,6 @@
             {
               id: "s11044",
               name: {
-                en: "Lays Cipsi",
-                tr: "Lays Cipsi",
                 tk: "Lays Cipsi",
                 ru: "Lays Cipsi",
               },
@@ -3591,8 +3287,6 @@
             {
               id: "s10953",
               name: {
-                en: "Pringles",
-                tr: "Pringles",
                 tk: "Pringles",
                 ru: "Pringles",
               },
@@ -3602,8 +3296,6 @@
             {
               id: "s10954",
               name: {
-                en: "Pringles",
-                tr: "Pringles",
                 tk: "Pringles",
                 ru: "Pringles",
               },
@@ -3613,8 +3305,6 @@
             {
               id: "s11049",
               name: {
-                en: "Pringles kici",
-                tr: "Pringles kici",
                 tk: "Pringles kici",
                 ru: "Pringles kici",
               },
@@ -3624,8 +3314,6 @@
             {
               id: "s11045",
               name: {
-                en: "Turan Cipsi",
-                tr: "Turan Cipsi",
                 tk: "Turan Cipsi",
                 ru: "Turan Cipsi",
               },
@@ -3637,8 +3325,6 @@
         {
           id: "marmelat",
           name: {
-            en: "Marmelat",
-            tr: "Marmelat",
             tk: "Marmelat",
             ru: "Marmelat",
           },
@@ -3646,8 +3332,6 @@
             {
               id: "s10956",
               name: {
-                en: "Mambo Marmelat",
-                tr: "Mambo Marmelat",
                 tk: "Mambo Marmelat",
                 ru: "Mambo Marmelat",
               },
@@ -3657,8 +3341,6 @@
             {
               id: "s10957",
               name: {
-                en: "Mambo Marmelat",
-                tr: "Mambo Marmelat",
                 tk: "Mambo Marmelat",
                 ru: "Mambo Marmelat",
               },
@@ -3668,8 +3350,6 @@
             {
               id: "s10975",
               name: {
-                en: "Martini Yadra",
-                tr: "A",
                 tk: "Martini Yadra",
                 ru: "A",
               },
@@ -3681,8 +3361,6 @@
         {
           id: "kireski",
           name: {
-            en: "Kireski",
-            tr: "Kireski",
             tk: "Kireski",
             ru: "Kireski",
           },
@@ -3690,8 +3368,6 @@
             {
               id: "s10960",
               name: {
-                en: "Kireski",
-                tr: "Kireski",
                 tk: "Kireski",
                 ru: "Kireski",
               },
@@ -3701,8 +3377,6 @@
             {
               id: "s10961",
               name: {
-                en: "Kireski",
-                tr: "Kireski",
                 tk: "Kireski",
                 ru: "Kireski",
               },
@@ -3712,8 +3386,6 @@
             {
               id: "s10959",
               name: {
-                en: "Korocki bekon",
-                tr: "Korocki bekon",
                 tk: "Korocki bekon",
                 ru: "Korocki bekon",
               },
@@ -3723,8 +3395,6 @@
             {
               id: "s10958",
               name: {
-                en: "Korocki syr i semga",
-                tr: "Korocki syr i semga",
                 tk: "Korocki syr i semga",
                 ru: "Korocki syr i semga",
               },
@@ -3736,8 +3406,6 @@
         {
           id: "shortik",
           name: {
-            en: "Shortik",
-            tr: "Shortik",
             tk: "Shortik",
             ru: "Shortik",
           },
@@ -3745,8 +3413,6 @@
             {
               id: "s11013",
               name: {
-                en: "A",
-                tr: "A",
                 tk: "A",
                 ru: "A",
               },
@@ -3756,8 +3422,6 @@
             {
               id: "s11014",
               name: {
-                en: "Shortik No3",
-                tr: "Shortik No3",
                 tk: "Shortik No3",
                 ru: "Shortik No3",
               },
@@ -3767,8 +3431,6 @@
             {
               id: "s11011",
               name: {
-                en: "shortik",
-                tr: "shortik",
                 tk: "shortik",
                 ru: "shortik",
               },
@@ -3778,8 +3440,6 @@
             {
               id: "s11012",
               name: {
-                en: "shortik No1",
-                tr: "shortik No1",
                 tk: "shortik No1",
                 ru: "shortik No1",
               },
@@ -3791,8 +3451,6 @@
         {
           id: "harytlar",
           name: {
-            en: "Harytlar",
-            tr: "Harytlar",
             tk: "Harytlar",
             ru: "Harytlar",
           },
@@ -3800,8 +3458,6 @@
             {
               id: "s11029",
               name: {
-                en: "Awaza Stakan Sowgatlyk",
-                tr: "Awaza Stakan Sowgatlyk",
                 tk: "Awaza Stakan Sowgatlyk",
                 ru: "Awaza Stakan Sowgatlyk",
               },
@@ -3811,8 +3467,6 @@
             {
               id: "s11025",
               name: {
-                en: "Awaza rucka",
-                tr: "Awaza rucka",
                 tk: "Awaza rucka",
                 ru: "Awaza rucka",
               },
@@ -3822,8 +3476,6 @@
             {
               id: "s11026",
               name: {
-                en: "Awaza rucka gara",
-                tr: "Awaza rucka gara",
                 tk: "Awaza rucka gara",
                 ru: "Awaza rucka gara",
               },
@@ -3833,8 +3485,6 @@
             {
               id: "s11027",
               name: {
-                en: "Awaza rucka gyzyl",
-                tr: "Awaza rucka gyzyl",
                 tk: "Awaza rucka gyzyl",
                 ru: "Awaza rucka gyzyl",
               },
@@ -3844,8 +3494,6 @@
             {
               id: "s11028",
               name: {
-                en: "Top kici",
-                tr: "Top kici",
                 tk: "Top kici",
                 ru: "Top kici",
               },
@@ -3855,8 +3503,6 @@
             {
               id: "s11030",
               name: {
-                en: "Top uly",
-                tr: "Top uly",
                 tk: "Top uly",
                 ru: "Top uly",
               },
@@ -3868,8 +3514,6 @@
         {
           id: "caylar",
           name: {
-            en: "Caylar",
-            tr: "Caylar",
             tk: "Caylar",
             ru: "Caylar",
           },
@@ -3877,8 +3521,6 @@
             {
               id: "s11039",
               name: {
-                en: "Arab Tea",
-                tr: "Arab Tea",
                 tk: "Arab Tea",
                 ru: "Arab Tea",
               },
@@ -3888,8 +3530,6 @@
             {
               id: "s11040",
               name: {
-                en: "Cay Ozbek",
-                tr: "Cay Ozbek",
                 tk: "Cay Ozbek",
                 ru: "Cay Ozbek",
               },
@@ -3899,8 +3539,6 @@
             {
               id: "s11038",
               name: {
-                en: "Gara Cay",
-                tr: "Gara Cay",
                 tk: "Gara Cay",
                 ru: "Gara Cay",
               },
@@ -3910,8 +3548,6 @@
             {
               id: "s11065",
               name: {
-                en: "Kenya Black Tea",
-                tr: "Kenya Black Tea",
                 tk: "Kenya Black Tea",
                 ru: "Kenya Black Tea",
               },
@@ -3921,8 +3557,6 @@
             {
               id: "s11048",
               name: {
-                en: "Rysgal cay",
-                tr: "Rysgal cay",
                 tk: "Rysgal cay",
                 ru: "Rysgal cay",
               },
@@ -3932,8 +3566,6 @@
             {
               id: "s11041",
               name: {
-                en: "Sah Gold Cay",
-                tr: "Sah Gold Cay",
                 tk: "Sah Gold Cay",
                 ru: "Sah Gold Cay",
               },
@@ -3945,8 +3577,6 @@
         {
           id: "sakgyc",
           name: {
-            en: "Sakgyc",
-            tr: "Sakgyc",
             tk: "Sakgyc",
             ru: "Sakgyc",
           },
@@ -3954,8 +3584,6 @@
             {
               id: "s11090",
               name: {
-                en: "Dirol Yasyl Klubnika",
-                tr: "Dirol Yasyl Klubnika",
                 tk: "Dirol Yasyl Klubnika",
                 ru: "Dirol Yasyl Klubnika",
               },
@@ -3965,8 +3593,6 @@
             {
               id: "s11092",
               name: {
-                en: "Mentos",
-                tr: "Mentos",
                 tk: "Mentos",
                 ru: "Mentos",
               },
@@ -3976,8 +3602,6 @@
             {
               id: "s11093",
               name: {
-                en: "Mentos Ice",
-                tr: "Mentos Ice",
                 tk: "Mentos Ice",
                 ru: "Mentos Ice",
               },
@@ -3987,8 +3611,6 @@
             {
               id: "s11094",
               name: {
-                en: "Mentos Pure Fresh",
-                tr: "Mentos Pure Fresh",
                 tk: "Mentos Pure Fresh",
                 ru: "Mentos Pure Fresh",
               },
@@ -3998,8 +3620,6 @@
             {
               id: "s11095",
               name: {
-                en: "Mentos Pure White",
-                tr: "Mentos Pure White",
                 tk: "Mentos Pure White",
                 ru: "Mentos Pure White",
               },
@@ -4009,8 +3629,6 @@
             {
               id: "s11091",
               name: {
-                en: "Mentos uly",
-                tr: "Mentos uly",
                 tk: "Mentos uly",
                 ru: "Mentos uly",
               },
@@ -4022,8 +3640,6 @@
         {
           id: "oyunjaklar",
           name: {
-            en: "Oyunjaklar",
-            tr: "Oyunjaklar",
             tk: "Oyunjaklar",
             ru: "Oyunjaklar",
           },
@@ -4031,8 +3647,6 @@
             {
               id: "s11111",
               name: {
-                en: "Squish kici",
-                tr: "Squish",
                 tk: "Squish",
                 ru: "Squish",
               },
@@ -4042,8 +3656,6 @@
             {
               id: "s11112",
               name: {
-                en: "Squish Uly",
-                tr: "Squish Uly",
                 tk: "Squish Uly",
                 ru: "Squish Uly",
               },
@@ -4163,9 +3775,9 @@
         }),
       );
 
-      const t = (key) => (T[state.lang] || T.en)[key] || key;
+      const t = (key) => (T[state.lang] || T.ru)[key] || key;
       const tr = (obj) =>
-        obj ? obj[state.lang] || obj.en || Object.values(obj)[0] || "" : "";
+        obj ? obj[state.lang] || obj.ru || Object.values(obj)[0] || "" : "";
       const nameOf = (item) => tr(item.name);
       const money = (n) => {
         const num = Number(n).toFixed(2).replace(/\.00$/, "");
