@@ -317,6 +317,10 @@
       <div class="sheet-body" id="sheetBody"></div>
 
       <div class="sheet-foot">
+        <div class="totals sub">
+          <span class="t-label" data-i18n="delivery"></span>
+          <span class="t-value" id="deliveryValue">0</span>
+        </div>
         <div class="totals">
           <span class="t-label" data-i18n="total"></span>
           <span class="t-value" id="totalValue">0</span>
@@ -1666,6 +1670,11 @@
         font-weight: 800;
         color: var(--accent);
       }
+      .totals.sub .t-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--fg);
+      }
 
       .cta {
         display: flex;
@@ -2102,6 +2111,7 @@
         brand: "Turkana-Market", // üst barda görünen isim / name in the header
         currency: "m", // para birimi / currency symbol
         currencyAfter: true, // simge fiyatın sonunda mı? / symbol after the price
+        deliveryFee: 40, // dostawka hyzmaty / delivery fee, added on top of the cart total
         defaultLanguage: "ru", // ru | tk
         defaultTheme: "light", // dark | light
 
@@ -2182,6 +2192,7 @@
           cart: "Корзина",
           empty: "Корзина пуста",
           emptyHint: "Нажмите на товар — он появится здесь.",
+          delivery: "Dostawka hyzmaty",
           total: "Итого",
           order: "Заказ",
           sendOrder: "Заказать по СМС",
@@ -2211,6 +2222,7 @@
           cart: "Sebedim",
           empty: "Sebediňiz boş",
           emptyHint: "Haryda basyň, şu ýere goşulýar.",
+          delivery: "Dostawka hyzmaty",
           total: "Jemi",
           order: "Sargyt",
           sendOrder: "SMS bilen sargyt et",
@@ -3714,6 +3726,7 @@
         sheetBody: $("#sheetBody"),
         sheetCount: $("#sheetCount"),
         sheetClose: $("#sheetClose"),
+        deliveryValue: $("#deliveryValue"),
         totalValue: $("#totalValue"),
         orderBtn: $("#orderBtn"),
         clearBtn: $("#clearBtn"),
@@ -3806,6 +3819,8 @@
           const p = PRODUCTS.get(id);
           return p ? sum + p.price * q : sum;
         }, 0);
+      const deliveryFee = () => (cartCount() > 0 ? CONFIG.deliveryFee : 0);
+      const grandTotal = () => cartTotal() + deliveryFee();
 
       const lockScroll = () => {
         document.body.classList.toggle(
@@ -4193,7 +4208,8 @@
         els.fabBadge.classList.toggle("on", count > 0);
         els.topOrder.classList.toggle("on", count > 0);
         els.sheetCount.textContent = count ? `${count} ${t("item")}` : "";
-        els.totalValue.textContent = money(cartTotal());
+        els.deliveryValue.textContent = money(deliveryFee());
+        els.totalValue.textContent = money(grandTotal());
         els.orderBtn.disabled = count === 0;
 
         if (!ids.length) {
@@ -4295,7 +4311,8 @@
           lines.push(`${qty} x ${nameOf(p)} - ${money(p.price * qty)}`);
         });
 
-        lines.push("", `${t("msgTotal")}: ${money(cartTotal())}`);
+        lines.push(`${t("delivery")}: ${money(deliveryFee())}`);
+        lines.push("", `${t("msgTotal")}: ${money(grandTotal())}`);
         lines.push(`${t("msgName")}: ${state.who.name.trim()}`);
         lines.push(`${t("msgAddress")}: ${state.who.address.trim()}`);
 
